@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>API 文档 - Fast Bean Copier</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <header>
+        <div class="container">
+            <h1>🚀 Fast Bean Copier</h1>
+            <p>高性能的 Java Bean 拷贝工具</p>
+            <div class="version-badge">版本 1.0.0</div>
+        </div>
+    </header>
+    
+    <nav>
+        <ul>
+            <li><a href="index.html">首页</a></li>
+            <li><a href="getting-started.html">快速入门</a></li>
+            <li><a href="reference.html">参考文档</a></li>
+            <li><a href="api.html" class="active">API 文档</a></li>
+            <li><a href="faq.html">常见问题</a></li>
+            <li><a href="summary.html">项目总结</a></li>
+        </ul>
+    </nav>
+    
+    <div class="container">
+        <div class="content">
+            <h1>Fast Bean Copier API 文档</h1>
+            
+            <h2>注解</h2>
+            
+            <h3>@CopyTarget</h3>
+            <p>标记目标 DTO 类，指定源类和要忽略的字段。</p>
+            
+            <h4>声明</h4>
+            <pre><code>@Target(ElementType.TYPE)
+@Retention(RetentionPolicy.SOURCE)
+public @interface CopyTarget {
+    /**
+     * 源类的类型。必需。
+     */
+    Class&lt;?&gt; source();
+    
+    /**
+     * 要忽略的字段名数组。可选。
+     */
+    String[] ignore() default {};
+}</code></pre>
+            
+            <h4>属性</h4>
+            <table>
+                <tr>
+                    <th>属性</th>
+                    <th>类型</th>
+                    <th>必需</th>
+                    <th>说明</th>
+                </tr>
+                <tr>
+                    <td><code>source</code></td>
+                    <td><code>Class&lt;?&gt;</code></td>
+                    <td>是</td>
+                    <td>源类的类型</td>
+                </tr>
+                <tr>
+                    <td><code>ignore</code></td>
+                    <td><code>String[]</code></td>
+                    <td>否</td>
+                    <td>要忽略的字段名数组</td>
+                </tr>
+            </table>
+            
+            <h4>示例</h4>
+            <pre><code>// 基本用法
+@CopyTarget(source = User.class)
+public class UserDto {
+    // ...
+}
+
+// 忽略字段
+@CopyTarget(source = User.class, ignore = {"password", "token"})
+public class UserResponse {
+    // ...
+}</code></pre>
+            
+            <h2>生成的 Copier 类方法</h2>
+            
+            <h3>toDto(source)</h3>
+            <p>将源对象转换为目标 DTO 对象。</p>
+            <p><strong>签名：</strong></p>
+            <pre><code>public static TargetType toDto(SourceType source)</code></pre>
+            <p><strong>参数：</strong> <code>source</code> - 源对象</p>
+            <p><strong>返回值：</strong> 目标 DTO 对象，如果源对象为 null，返回 null</p>
+            <p><strong>示例：</strong></p>
+            <pre><code>User user = new User(1L, "张三", "zhangsan@example.com", 25);
+UserDto userDto = UserDtoCopier.toDto(user);</code></pre>
+            
+            <h3>fromDto(source)</h3>
+            <p>将目标 DTO 对象转换回源对象（反向拷贝）。</p>
+            <p><strong>签名：</strong></p>
+            <pre><code>public static SourceType fromDto(TargetType source)</code></pre>
+            <p><strong>参数：</strong> <code>source</code> - 目标 DTO 对象</p>
+            <p><strong>返回值：</strong> 源对象，如果目标对象为 null，返回 null</p>
+            <p><strong>示例：</strong></p>
+            <pre><code>UserDto userDto = new UserDto(1L, "张三", "zhangsan@example.com", 25);
+User user = UserDtoCopier.fromDto(userDto);</code></pre>
+            
+            <h3>toDtoList(sources)</h3>
+            <p>将源对象列表转换为目标 DTO 对象列表。</p>
+            <p><strong>签名：</strong></p>
+            <pre><code>public static List toDtoList(List sources)</code></pre>
+            <p><strong>参数：</strong> <code>sources</code> - 源对象列表</p>
+            <p><strong>返回值：</strong> 目标 DTO 对象列表，如果源列表为 null，返回 null</p>
+            <p><strong>示例：</strong></p>
+            <pre><code>List&lt;User&gt; users = userRepository.findAll();
+List&lt;UserDto&gt; userDtos = UserDtoCopier.toDtoList(users);</code></pre>
+            
+            <h3>toDtoSet(sources)</h3>
+            <p>将源对象集合转换为目标 DTO 对象集合。</p>
+            <p><strong>签名：</strong></p>
+            <pre><code>public static Set toDtoSet(Set sources)</code></pre>
+            <p><strong>参数：</strong> <code>sources</code> - 源对象集合</p>
+            <p><strong>返回值：</strong> 目标 DTO 对象集合，如果源集合为 null，返回 null</p>
+            <p><strong>示例：</strong></p>
+            <pre><code>Set&lt;User&gt; users = new HashSet&lt;&gt;(userRepository.findAll());
+Set&lt;UserDto&gt; userDtos = UserDtoCopier.toDtoSet(users);</code></pre>
+            
+            <h3>fromDtoList(sources)</h3>
+            <p>将目标 DTO 对象列表转换回源对象列表（反向拷贝）。</p>
+            <p><strong>签名：</strong></p>
+            <pre><code>public static List fromDtoList(List sources)</code></pre>
+            <p><strong>参数：</strong> <code>sources</code> - 目标 DTO 对象列表</p>
+            <p><strong>返回值：</strong> 源对象列表，如果目标列表为 null，返回 null</p>
+            
+            <h3>fromDtoSet(sources)</h3>
+            <p>将目标 DTO 对象集合转换回源对象集合（反向拷贝）。</p>
+            <p><strong>签名：</strong></p>
+            <pre><code>public static Set fromDtoSet(Set sources)</code></pre>
+            <p><strong>参数：</strong> <code>sources</code> - 目标 DTO 对象集合</p>
+            <p><strong>返回值：</strong> 源对象集合，如果目标集合为 null，返回 null</p>
+            
+            <h2>类型转换</h2>
+            
+            <h3>支持的类型转换</h3>
+            <table>
+                <tr>
+                    <th>源类型</th>
+                    <th>目标类型</th>
+                    <th>说明</th>
+                </tr>
+                <tr>
+                    <td><code>int</code></td>
+                    <td><code>Integer</code></td>
+                    <td>自动装箱</td>
+                </tr>
+                <tr>
+                    <td><code>Integer</code></td>
+                    <td><code>int</code></td>
+                    <td>自动拆箱，null 转换为 0</td>
+                </tr>
+                <tr>
+                    <td><code>long</code></td>
+                    <td><code>Long</code></td>
+                    <td>自动装箱</td>
+                </tr>
+                <tr>
+                    <td><code>Long</code></td>
+                    <td><code>long</code></td>
+                    <td>自动拆箱，null 转换为 0L</td>
+                </tr>
+                <tr>
+                    <td><code>double</code></td>
+                    <td><code>Double</code></td>
+                    <td>自动装箱</td>
+                </tr>
+                <tr>
+                    <td><code>Double</code></td>
+                    <td><code>double</code></td>
+                    <td>自动拆箱，null 转换为 0.0</td>
+                </tr>
+                <tr>
+                    <td><code>float</code></td>
+                    <td><code>Float</code></td>
+                    <td>自动装箱</td>
+                </tr>
+                <tr>
+                    <td><code>Float</code></td>
+                    <td><code>float</code></td>
+                    <td>自动拆箱，null 转换为 0.0f</td>
+                </tr>
+                <tr>
+                    <td><code>boolean</code></td>
+                    <td><code>Boolean</code></td>
+                    <td>自动装箱</td>
+                </tr>
+                <tr>
+                    <td><code>Boolean</code></td>
+                    <td><code>boolean</code></td>
+                    <td>自动拆箱，null 转换为 false</td>
+                </tr>
+            </table>
+            
+            <h2>Null 值处理</h2>
+            
+            <h3>对象级别的 null 处理</h3>
+            <pre><code>UserDto dto = UserDtoCopier.toDto(null);  // 返回 null
+User user = UserDtoCopier.fromDto(null);  // 返回 null
+List&lt;UserDto&gt; dtos = UserDtoCopier.toDtoList(null);  // 返回 null</code></pre>
+            
+            <h3>字段级别的 null 处理</h3>
+            <p>在字段映射时，null 值会被保留。</p>
+            
+            <h3>包装类型 null 转换为基本类型</h3>
+            <pre><code>@CopyTarget(source = UserDto.class)
+public class User {
+    private int age;  // 基本类型
+}
+
+UserDto userDto = new UserDto();
+userDto.setAge(null);  // age 为 null
+
+User user = UserDtoCopier.fromDto(userDto);
+// user.age 为 0（int 的默认值）</code></pre>
+            
+            <h2>字段忽略</h2>
+            
+            <h3>使用 ignore 属性</h3>
+            <pre><code>@CopyTarget(source = User.class, ignore = {"password", "token"})
+public class UserDto {
+    private Long id;
+    private String name;
+    private String email;
+    // password 和 token 不会被拷贝
+}</code></pre>
+            
+            <h2>线程安全性</h2>
+            <p>生成的 Copier 类是无状态的，可以安全地在多线程环境中使用。</p>
+            <pre><code>// 在多线程环境中安全使用
+ExecutorService executor = Executors.newFixedThreadPool(10);
+for (User user : users) {
+    executor.submit(() -> {
+        UserDto dto = UserDtoCopier.toDto(user);
+        // 处理 dto
+    });
+}</code></pre>
+            
+            <h2>性能特性</h2>
+            <ul>
+                <li><strong>编译期代码生成</strong> - 无运行时开销</li>
+                <li><strong>无反射</strong> - 直接调用 getter/setter</li>
+                <li><strong>无动态代理</strong> - 生成的代码是普通 Java 代码</li>
+                <li><strong>内联友好</strong> - JIT 编译器可以内联生成的代码</li>
+            </ul>
+        </div>
+    </div>
+    
+    <footer>
+        <p>&copy; 2025 Fast Bean Copier. All rights reserved.</p>
+        <p>采用 Apache License 2.0 许可证</p>
+    </footer>
+</body>
+</html>

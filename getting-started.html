@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>快速入门 - Fast Bean Copier</title>
+    <link rel="icon" type="image/png" href="favicon.png">
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <header>
+        <div class="container">
+            <div class="logo-container">
+                <img src="logo.png" alt="Fast Bean Copier Logo" class="logo">
+                <h1>🚀 Fast Bean Copier</h1>
+            </div>
+            <p>高性能的 Java Bean 拷贝工具</p>
+            <div class="version-badge">版本 1.0.0</div>
+        </div>
+    </header>
+    
+    <nav>
+        <ul>
+            <li><a href="index.html">首页</a></li>
+            <li><a href="getting-started.html" class="active">快速入门</a></li>
+            <li><a href="reference.html">参考文档</a></li>
+            <li><a href="api.html">API 文档</a></li>
+            <li><a href="faq.html">常见问题</a></li>
+            <li><a href="summary.html">项目总结</a></li>
+        </ul>
+    </nav>
+    
+    <div class="container">
+        <div class="content">
+            <h1>快速入门指南</h1>
+            
+            <h2>5 分钟快速开始</h2>
+            
+            <h3>步骤 1：添加依赖</h3>
+            <p>在您的 <code>pom.xml</code> 中添加以下依赖：</p>
+            <pre><code>&lt;dependency&gt;
+    &lt;groupId&gt;com.github.jackieonway&lt;/groupId&gt;
+    &lt;artifactId&gt;fast-bean-copier-annotations&lt;/artifactId&gt;
+    &lt;version&gt;1.0.0&lt;/version&gt;
+&lt;/dependency&gt;
+
+&lt;dependency&gt;
+    &lt;groupId&gt;com.github.jackieonway&lt;/groupId&gt;
+    &lt;artifactId&gt;fast-bean-copier-processor&lt;/artifactId&gt;
+    &lt;version&gt;1.0.0&lt;/version&gt;
+    &lt;scope&gt;provided&lt;/scope&gt;
+&lt;/dependency&gt;</code></pre>
+            
+            <h3>步骤 2：定义源类</h3>
+            <pre><code>public class User {
+    private Long id;
+    private String name;
+    private String email;
+    private Integer age;
+    
+    // getter/setter...
+    public Long getId() { return id; }
+    public void setId(Long id) { this.id = id; }
+    
+    public String getName() { return name; }
+    public void setName(String name) { this.name = name; }
+    
+    public String getEmail() { return email; }
+    public void setEmail(String email) { this.email = email; }
+    
+    public Integer getAge() { return age; }
+    public void setAge(Integer age) { this.age = age; }
+}</code></pre>
+            
+            <h3>步骤 3：定义 DTO 类</h3>
+            <pre><code>import com.github.jackieonway.copier.annotation.CopyTarget;
+
+@CopyTarget(source = User.class)
+public class UserDto {
+    private Long id;
+    private String name;
+    private String email;
+    private Integer age;
+    
+    // getter/setter...
+}</code></pre>
+            
+            <h3>步骤 4：编译</h3>
+            <pre><code>mvn clean compile</code></pre>
+            <p>编译完成后，Fast Bean Copier 会自动生成 <code>UserDtoCopier</code> 类。</p>
+            
+            <h3>步骤 5：使用</h3>
+            <pre><code>// 创建源对象
+User user = new User();
+user.setId(1L);
+user.setName("张三");
+user.setEmail("zhangsan@example.com");
+user.setAge(25);
+
+// 转换为 DTO
+UserDto userDto = UserDtoCopier.toDto(user);
+
+// 打印结果
+System.out.println("ID: " + userDto.getId());
+System.out.println("Name: " + userDto.getName());
+System.out.println("Email: " + userDto.getEmail());
+System.out.println("Age: " + userDto.getAge());</code></pre>
+            
+            <h2>常见场景</h2>
+            
+            <h3>场景 1：忽略敏感字段</h3>
+            <pre><code>@CopyTarget(source = User.class, ignore = {"password"})
+public class UserDto {
+    private Long id;
+    private String name;
+    private String email;
+    // password 字段不会被拷贝
+}</code></pre>
+            
+            <h3>场景 2：批量转换</h3>
+            <pre><code>List&lt;User&gt; users = userRepository.findAll();
+List&lt;UserDto&gt; userDtos = UserDtoCopier.toDtoList(users);</code></pre>
+            
+            <h3>场景 3：双向转换</h3>
+            <pre><code>// 从 DTO 转换为实体
+User user = UserDtoCopier.fromDto(userDto);
+
+// 保存到数据库
+userRepository.save(user);
+
+// 再转换回 DTO
+UserDto response = UserDtoCopier.toDto(user);</code></pre>
+            
+            <h3>场景 4：集合转换</h3>
+            <pre><code>// List 转换
+List&lt;UserDto&gt; dtos = UserDtoCopier.toDtoList(users);
+
+// Set 转换
+Set&lt;UserDto&gt; dtoSet = UserDtoCopier.toDtoSet(users);
+
+// 反向转换
+List&lt;User&gt; users = UserDtoCopier.fromDtoList(dtos);
+Set&lt;User&gt; userSet = UserDtoCopier.fromDtoSet(dtoSet);</code></pre>
+            
+            <h2>故障排除</h2>
+            
+            <h3>问题：生成的 Copier 类未出现</h3>
+            <p><strong>解决方案：</strong></p>
+            <ol>
+                <li>确保使用了 <code>@CopyTarget</code> 注解</li>
+                <li>确保源类和目标类都有 getter/setter 方法</li>
+                <li>运行 <code>mvn clean compile</code> 进行完整编译</li>
+            </ol>
+            
+            <h3>问题：字段未被拷贝</h3>
+            <p><strong>解决方案：</strong></p>
+            <ol>
+                <li>检查字段名是否完全相同（区分大小写）</li>
+                <li>检查源类和目标类是否都有该字段的 getter/setter</li>
+                <li>检查该字段是否在 <code>ignore</code> 属性中</li>
+            </ol>
+            
+            <h3>问题：IDE 中看不到生成的代码</h3>
+            <p><strong>解决方案：</strong></p>
+            <ol>
+                <li>在 IDE 中刷新项目（F5 或右键 -> Refresh）</li>
+                <li>重新构建项目（Clean -> Build）</li>
+                <li>检查 IDE 是否启用了注解处理（通常默认启用）</li>
+            </ol>
+            
+            <h2>下一步</h2>
+            <div class="toc">
+                <ul>
+                    <li><a href="reference.html">查看参考文档</a> - 了解更多功能</li>
+                    <li><a href="api.html">查看 API 文档</a> - 详细的 API 参考</li>
+                    <li><a href="faq.html">查看常见问题</a> - 常见问题和解决方案</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+    
+    <footer>
+        <p>&copy; 2025 Fast Bean Copier. All rights reserved.</p>
+        <p>采用 Apache License 2.0 许可证</p>
+    </footer>
+</body>
+</html>

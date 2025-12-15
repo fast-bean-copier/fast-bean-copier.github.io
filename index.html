@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fast Bean Copier 1.0.0 文档</title>
+    <link rel="icon" type="image/png" href="favicon.png">
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <header>
+        <div class="container">
+            <div class="logo-container">
+                <img src="logo.png" alt="Fast Bean Copier Logo" class="logo">
+                <h1>🚀 Fast Bean Copier</h1>
+            </div>
+            <p>高性能的 Java Bean 拷贝工具</p>
+            <div class="version-badge">版本 1.0.0</div>
+        </div>
+    </header>
+    
+    <nav>
+        <ul>
+            <li><a href="index.html" class="active">首页</a></li>
+            <li><a href="getting-started.html">快速入门</a></li>
+            <li><a href="reference.html">参考文档</a></li>
+            <li><a href="api.html">API 文档</a></li>
+            <li><a href="faq.html">常见问题</a></li>
+            <li><a href="summary.html">项目总结</a></li>
+        </ul>
+    </nav>
+    
+    <div class="container">
+        <div class="content">
+            <h1>欢迎使用 Fast Bean Copier</h1>
+            
+            <p>Fast Bean Copier 是一个基于注解处理器的 Java Bean 拷贝工具，用于生成类型安全、高性能且零依赖的 Bean 映射代码。</p>
+            
+            <h2>✨ 核心特性</h2>
+            <div class="feature-grid">
+                <div class="feature-card">
+                    <h3>⚡ 高性能</h3>
+                    <p>编译期代码生成，零运行时反射，性能与手写代码相同</p>
+                </div>
+                <div class="feature-card">
+                    <h3>🔒 类型安全</h3>
+                    <p>编译期类型检查，避免运行时错误</p>
+                </div>
+                <div class="feature-card">
+                    <h3>📦 零依赖</h3>
+                    <p>生成的代码不依赖任何外部库</p>
+                </div>
+                <div class="feature-card">
+                    <h3>🎯 简洁易用</h3>
+                    <p>只需一个 @CopyTarget 注解，自动生成所有拷贝方法</p>
+                </div>
+                <div class="feature-card">
+                    <h3>🔄 完整功能</h3>
+                    <p>支持字段忽略、类型转换、集合处理、双向拷贝</p>
+                </div>
+                <div class="feature-card">
+                    <h3>📚 完整文档</h3>
+                    <p>参考文档、快速入门、API 文档、常见问题解答</p>
+                </div>
+            </div>
+            
+            <h2>🚀 快速开始</h2>
+            <p>只需三步即可开始使用 Fast Bean Copier：</p>
+            
+            <h3>1. 添加依赖</h3>
+            <pre><code>&lt;dependency&gt;
+    &lt;groupId&gt;com.github.jackieonway&lt;/groupId&gt;
+    &lt;artifactId&gt;fast-bean-copier-annotations&lt;/artifactId&gt;
+    &lt;version&gt;1.0.0&lt;/version&gt;
+&lt;/dependency&gt;
+
+&lt;dependency&gt;
+    &lt;groupId&gt;com.github.jackieonway&lt;/groupId&gt;
+    &lt;artifactId&gt;fast-bean-copier-processor&lt;/artifactId&gt;
+    &lt;version&gt;1.0.0&lt;/version&gt;
+    &lt;scope&gt;provided&lt;/scope&gt;
+&lt;/dependency&gt;</code></pre>
+            
+            <h3>2. 定义 DTO 类</h3>
+            <pre><code>import com.github.jackieonway.copier.annotation.CopyTarget;
+
+@CopyTarget(source = User.class)
+public class UserDto {
+    private Long id;
+    private String name;
+    private String email;
+    // getter/setter...
+}</code></pre>
+            
+            <h3>3. 使用</h3>
+            <pre><code>User user = new User(1L, "张三", "zhangsan@example.com");
+UserDto userDto = UserDtoCopier.toDto(user);</code></pre>
+            
+            <h2>📖 文档导航</h2>
+            <div class="toc">
+                <h3>选择您需要的文档：</h3>
+                <ul>
+                    <li><a href="getting-started.html">快速入门指南</a> - 5 分钟快速开始</li>
+                    <li><a href="reference.html">参考文档</a> - 完整的功能说明</li>
+                    <li><a href="api.html">API 文档</a> - 详细的 API 参考</li>
+                    <li><a href="faq.html">常见问题解答</a> - 常见问题和解决方案</li>
+                    <li><a href="summary.html">项目总结</a> - 项目概览和统计</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+    
+    <footer>
+        <p>&copy; 2025 Fast Bean Copier. All rights reserved.</p>
+        <p>采用 Apache License 2.0 许可证</p>
+    </footer>
+    
+    <script src="script.js"></script>
+</body>
+</html>

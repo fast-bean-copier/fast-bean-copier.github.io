@@ -1,6 +1,6 @@
-# Fast Bean Copier 文档网站
+# Fast Bean Copier 1.1.0 版本参考文档
 
-这是 Fast Bean Copier 1.0.0 的官方文档网站。
+这是 Fast Bean Copier 1.1.0 版本的参考文档，包含该版本的完整文档内容。
 
 ## 文档页面
 

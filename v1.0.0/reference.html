@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>参考文档 - Fast Bean Copier</title>
+    <link rel="icon" type="image/png" href="favicon.png">
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <header>
+        <div class="container">
+            <div class="logo-container">
+                <img src="logo.png" alt="Fast Bean Copier Logo" class="logo">
+                <h1>🚀 Fast Bean Copier</h1>
+            </div>
+            <p>高性能的 Java Bean 拷贝工具</p>
+            <div class="version-badge">版本 1.0.0</div>
+        </div>
+    </header>
+    
+    <nav>
+        <ul>
+            <li><a href="index.html">首页</a></li>
+            <li><a href="getting-started.html">快速入门</a></li>
+            <li><a href="reference.html" class="active">参考文档</a></li>
+            <li><a href="api.html">API 文档</a></li>
+            <li><a href="faq.html">常见问题</a></li>
+            <li><a href="summary.html">项目总结</a></li>
+            <li><a href="changelog.html">更新日志</a></li>
+        </ul>
+    </nav>
+    
+    <div class="container">
+        <div class="content">
+            <h1>Fast Bean Copier 1.0.0 参考文档</h1>
+            
+            <h2>前言</h2>
+            <p>本文档是 Fast Bean Copier 的参考文档，Fast Bean Copier 是一个基于注解处理器的 Java Bean 拷贝工具，用于生成类型安全、高性能且零依赖的 Bean 映射代码。</p>
+            
+            <h2>1. 简介</h2>
+            <p>Fast Bean Copier 是一个 Java 注解处理器，用于生成类型安全的 Bean 拷贝类。您只需要定义一个目标 DTO 类并使用 <code>@CopyTarget</code> 注解标记它。在编译期间，Fast Bean Copier 会自动生成一个 Copier 类，该类包含 <code>toDto()</code> 和 <code>fromDto()</code> 等方法。</p>
+            
+            <h3>与手写映射代码相比的优势</h3>
+            <ul>
+                <li>通过生成繁琐且容易出错的代码来节省时间</li>
+                <li>遵循"约定优于配置"的方法</li>
+                <li>使用合理的默认值</li>
+            </ul>
+            
+            <h3>与动态映射框架相比的优势</h3>
+            <ul>
+                <li><strong>快速执行</strong> - 使用普通方法调用而不是反射</li>
+                <li><strong>编译期类型安全</strong> - 只有对象和属性能够相互映射</li>
+                <li><strong>清晰的编译时错误报告</strong> - 如果映射不完整或不正确，会在编译时报告</li>
+                <li><strong>零运行时依赖</strong> - 生成的代码不依赖任何外部库</li>
+                <li><strong>支持集合映射</strong> - 自动生成 List/Set 的映射方法</li>
+            </ul>
+            
+            <h2>2. 设置</h2>
+            
+            <h3>2.1. Apache Maven</h3>
+            <p>要在 Maven 项目中使用 Fast Bean Copier，请在您的 <code>pom.xml</code> 中添加以下依赖：</p>
+            <pre><code>&lt;dependency&gt;
+    &lt;groupId&gt;com.github.jackieonway&lt;/groupId&gt;
+    &lt;artifactId&gt;fast-bean-copier-annotations&lt;/artifactId&gt;
+    &lt;version&gt;1.0.0&lt;/version&gt;
+&lt;/dependency&gt;
+
+&lt;dependency&gt;
+    &lt;groupId&gt;com.github.jackieonway&lt;/groupId&gt;
+    &lt;artifactId&gt;fast-bean-copier-processor&lt;/artifactId&gt;
+    &lt;version&gt;1.0.0&lt;/version&gt;
+    &lt;scope&gt;provided&lt;/scope&gt;
+&lt;/dependency&gt;</code></pre>
+            
+            <h3>2.2. Gradle</h3>
+            <pre><code>dependencies {
+    implementation 'com.github.jackieonway:fast-bean-copier-annotations:1.0.0'
+    annotationProcessor 'com.github.jackieonway:fast-bean-copier-processor:1.0.0'
+}</code></pre>
+            
+            <h3>2.3. Java 版本要求</h3>
+            <p>Fast Bean Copier 需要 Java 8 或更高版本。</p>
+            
+            <h2>3. 基本使用</h2>
+            
+            <h3>3.1. 定义 DTO 类</h3>
+            <pre><code>// 源类
+public class User {
+    private Long id;
+    private String name;
+    private String email;
+    private Integer age;
+    // getter/setter...
+}
+
+// 目标 DTO 类
+import com.github.jackieonway.copier.annotation.CopyTarget;
+
+@CopyTarget(source = User.class)
+public class UserDto {
+    private Long id;
+    private String name;
+    private String email;
+    private Integer age;
+    // getter/setter...
+}</code></pre>
+            
+            <h3>3.2. 编译</h3>
+            <pre><code>mvn clean compile</code></pre>
+            
+            <h3>3.3. 使用生成的 Copier 类</h3>
+            <pre><code>// 单个对象拷贝
+User user = new User(1L, "张三", "zhangsan@example.com", 25);
+UserDto userDto = UserDtoCopier.toDto(user);
+
+// 反向拷贝
+User converted = UserDtoCopier.fromDto(userDto);
+
+// 集合拷贝
+List&lt;UserDto&gt; userDtos = UserDtoCopier.toDtoList(users);
+Set&lt;UserDto&gt; userDtoSet = UserDtoCopier.toDtoSet(users);</code></pre>
+            
+            <h2>4. @CopyTarget 注解</h2>
+            <p><code>@CopyTarget</code> 注解用于标记目标 DTO 类，指定源类和要忽略的字段。</p>
+            
+            <h3>4.1. 注解属性</h3>
+            <pre><code>@CopyTarget(
+    source = User.class,           // 必需：指定源类
+    ignore = {"password", "token"} // 可选：指定要忽略的字段
+)
+public class UserDto {
+    // ...
+}</code></pre>
+            
+            <h2>5. 数据类型转换</h2>
+            
+            <h3>5.1. 同名字段自动拷贝</h3>
+            <p>Fast Bean Copier 自动拷贝源类和目标类中同名的字段。</p>
+            
+            <h3>5.2. 基本类型与包装类型转换</h3>
+            <p>Fast Bean Copier 自动支持基本类型与包装类型之间的转换。</p>
+            
+            <h3>5.3. 支持的类型转换</h3>
+            <table>
+                <tr>
+                    <th>源类型</th>
+                    <th>目标类型</th>
+                    <th>说明</th>
+                </tr>
+                <tr>
+                    <td><code>int</code></td>
+                    <td><code>Integer</code></td>
+                    <td>自动装箱</td>
+                </tr>
+                <tr>
+                    <td><code>Integer</code></td>
+                    <td><code>int</code></td>
+                    <td>自动拆箱，null 转换为 0</td>
+                </tr>
+                <tr>
+                    <td><code>long</code></td>
+                    <td><code>Long</code></td>
+                    <td>自动装箱</td>
+                </tr>
+                <tr>
+                    <td><code>Long</code></td>
+                    <td><code>long</code></td>
+                    <td>自动拆箱，null 转换为 0L</td>
+                </tr>
+                <tr>
+                    <td><code>double</code></td>
+                    <td><code>Double</code></td>
+                    <td>自动装箱</td>
+                </tr>
+                <tr>
+                    <td><code>Double</code></td>
+                    <td><code>double</code></td>
+                    <td>自动拆箱，null 转换为 0.0</td>
+                </tr>
+                <tr>
+                    <td><code>boolean</code></td>
+                    <td><code>Boolean</code></td>
+                    <td>自动装箱</td>
+                </tr>
+                <tr>
+                    <td><code>Boolean</code></td>
+                    <td><code>boolean</code></td>
+                    <td>自动拆箱，null 转换为 false</td>
+                </tr>
+            </table>
+            
+            <h2>6. 集合映射</h2>
+            
+            <h3>6.1. List 映射</h3>
+            <pre><code>// 转换为 DTO 列表
+List&lt;UserDto&gt; dtos = UserDtoCopier.toDtoList(users);
+
+// 反向转换
+List&lt;User&gt; users = UserDtoCopier.fromDtoList(dtos);</code></pre>
+            
+            <h3>6.2. Set 映射</h3>
+            <pre><code>// 转换为 DTO 集合
+Set&lt;UserDto&gt; dtoSet = UserDtoCopier.toDtoSet(users);
+
+// 反向转换
+Set&lt;User&gt; userSet = UserDtoCopier.fromDtoSet(dtoSet);</code></pre>
+            
+            <h2>7. Null 值处理</h2>
+            
+            <h3>7.1. 对象级别的 null 处理</h3>
+            <pre><code>// 传入 null 返回 null
+UserDto dto = UserDtoCopier.toDto(null);  // 返回 null
+User user = UserDtoCopier.fromDto(null);  // 返回 null</code></pre>
+            
+            <h3>7.2. 字段级别的 null 处理</h3>
+            <p>在字段映射时，null 值会被保留。</p>
+            
+            <h2>8. 性能考虑</h2>
+            
+            <h3>8.1. 编译期代码生成</h3>
+            <ul>
+                <li>运行时性能与手写代码相同</li>
+                <li>无反射开销</li>
+                <li>无动态代理开销</li>
+                <li>直接调用 getter/setter</li>
+            </ul>
+            
+            <h3>8.2. 内存使用</h3>
+            <p>生成的 Copier 类是无状态的，可以安全地在多线程环境中使用。</p>
+            
+            <h2>9. 最佳实践</h2>
+            
+            <h3>9.1. 为每个 DTO 定义一个 @CopyTarget</h3>
+            <pre><code>// ✅ 推荐
+@CopyTarget(source = User.class)
+public class UserDto { }
+
+@CopyTarget(source = User.class)
+public class UserResponse { }</code></pre>
+            
+            <h3>9.2. 使用 ignore 属性排除敏感字段</h3>
+            <pre><code>// ✅ 推荐
+@CopyTarget(source = User.class, ignore = {"password", "secretKey"})
+public class UserDto { }</code></pre>
+            
+            <h3>9.3. 保持源类和 DTO 的字段一致</h3>
+            <p>不要在 DTO 中添加源类中不存在的字段（除非有特殊原因）。</p>
+        </div>
+    </div>
+    
+    <footer>
+        <p>&copy; 2025 Fast Bean Copier. All rights reserved.</p>
+        <p>采用 Apache License 2.0 许可证</p>
+    </footer>
+</body>
+</html>

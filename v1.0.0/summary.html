@@ -15,7 +15,7 @@
                 <h1>🚀 Fast Bean Copier</h1>
             </div>
             <p>高性能的 Java Bean 拷贝工具</p>
-            <div class="version-badge">最新版本 1.1.0</div>
+            <div class="version-badge">版本 1.0.0</div>
         </div>
     </header>
     
@@ -37,13 +37,13 @@
             
             <h2>项目概述</h2>
             <p><strong>Fast Bean Copier</strong> 是一个高性能的 Java Bean 拷贝工具，使用 APT（注解处理工具）在编译期自动生成拷贝代码，实现零运行时开销。</p>
-            <p><strong>项目状态：</strong> ✅ 已完成，生产就绪（v1.1.0 集合深拷贝）</p>
+            <p><strong>项目状态：</strong> ✅ 已完成，生产就绪</p>
             
             <h2>项目信息</h2>
             <ul>
                 <li><strong>项目名称：</strong> Fast Bean Copier</li>
-                <li><strong>版本：</strong> 1.1.0</li>
-                <li><strong>发布日期：</strong> 2025-12-23</li>
+                <li><strong>版本：</strong> 1.0.0</li>
+                <li><strong>发布日期：</strong> 2025-12-13</li>
                 <li><strong>Java 版本：</strong> Java 8+</li>
                 <li><strong>构建工具：</strong> Maven</li>
                 <li><strong>许可证：</strong> Apache License 2.0</li>
@@ -76,34 +76,26 @@
                 </li>
                 <li><strong>字段忽略功能</strong>
                     <ul>
-                        <li><code>@CopyTarget</code> 注解的 <code>ignore</code> 属性</li>
+                        <li>@CopyTarget 注解的 ignore 属性</li>
                         <li>灵活的字段排除</li>
                     </ul>
                 </li>
-                <li><strong>集合深拷贝（v1.1）</strong>
+                <li><strong>List/Set 集合拷贝</strong>
                     <ul>
-                        <li>List/Set/Map/数组字段级深拷贝（含多维数组）</li>
-                        <li>嵌套集合组合（<code>List&lt;List&lt;T&gt;&gt;</code>、<code>Map&lt;String, List&lt;T&gt;&gt;</code> 等）</li>
-                        <li>null 集合/元素安全处理，容量预分配</li>
-                        <li>raw/无界通配符集合降级浅拷贝并给出编译期警告</li>
-                        <li>顶层批量方法：<code>toDtoMap/fromDtoMap</code>、<code>toDtoArray/fromDtoArray</code></li>
+                        <li>toDtoList/toDtoSet 方法</li>
+                        <li>fromDtoList/fromDtoSet 方法</li>
+                        <li>集合中的 null 元素处理</li>
                     </ul>
                 </li>
                 <li><strong>反向拷贝支持</strong>
                     <ul>
-                        <li><code>fromDto</code> 方法生成</li>
-                        <li>集合/数组的双向拷贝</li>
-                    </ul>
-                </li>
-                <li><strong>嵌套对象支持</strong>
-                    <ul>
-                        <li>嵌套对象字段的 null 值处理</li>
-                        <li>同名字段的直接拷贝</li>
+                        <li>fromDto 方法生成</li>
+                        <li>完整的双向转换</li>
                     </ul>
                 </li>
                 <li><strong>完整的文档</strong>
                     <ul>
-                        <li>参考文档（MapStruct 格式）</li>
+                        <li>参考文档</li>
                         <li>快速入门指南</li>
                         <li>API 文档</li>
                         <li>常见问题解答</li>
@@ -119,22 +111,6 @@
                 <li><strong>JavaPoet 1.13.0</strong> - 代码生成库</li>
                 <li><strong>Google Auto Service 1.0.1</strong> - APT 自动注册</li>
                 <li><strong>JUnit 4.13.2</strong> - 单元测试框架</li>
-            </ul>
-            
-            <h2>测试覆盖</h2>
-            <ul>
-                <li>测试用例：71（涵盖集合深拷贝、反向拷贝、嵌套集合、原始/通配符集合、性能基准等）</li>
-                <li>示例模块指令覆盖率：93%+（Jacoco）</li>
-                <li>所有测试通过 ✅</li>
-            </ul>
-            
-            <h2>代码质量</h2>
-            <ul>
-                <li><strong>编译</strong>：✅ 无错误</li>
-                <li><strong>代码规范</strong>：✅ UTF-8 编码，中文注释</li>
-                <li><strong>文档完整</strong>：✅ 详细的参考文档和 API 文档</li>
-                <li><strong>线程安全</strong>：✅ 生成的代码是无状态的</li>
-                <li><strong>性能</strong>：✅ 与手写代码性能相同</li>
             </ul>
             
             <h2>项目亮点</h2>
@@ -192,6 +168,16 @@ List&lt;UserDto&gt; dtos = UserDtoCopier.toDtoList(users);</code></pre>
             <h3>运行测试</h3>
             <pre><code>mvn clean test</code></pre>
             
+            <h2>文档</h2>
+            <ul>
+                <li><strong>README.md</strong> - 项目说明和快速开始</li>
+                <li><strong>docs/REFERENCE.md</strong> - 完整的参考文档</li>
+                <li><strong>docs/GETTING_STARTED.md</strong> - 5 分钟快速入门指南</li>
+                <li><strong>docs/API.md</strong> - 详细的 API 文档</li>
+                <li><strong>docs/FAQ.md</strong> - 常见问题解答</li>
+                <li><strong>docs/PROJECT_SUMMARY.md</strong> - 项目总结</li>
+            </ul>
+            
             <h2>性能指标</h2>
             <ul>
                 <li><strong>编译时间：</strong> &lt; 1 秒（增量编译）</li>
@@ -210,17 +196,20 @@ List&lt;UserDto&gt; dtos = UserDtoCopier.toDtoList(users);</code></pre>
             
             <h2>已知限制</h2>
             <ol>
-                <li>不支持自定义字段名映射 / 条件映射</li>
+                <li>不支持自定义字段映射</li>
                 <li>不支持 Enum 自动转换</li>
+                <li>不支持 Map 转换</li>
                 <li>不支持 Builder 模式</li>
-                <li>不支持自定义转换器</li>
+                <li>不支持嵌套对象的自动转换（需要手动处理）</li>
             </ol>
             
             <h2>未来计划</h2>
             <ul>
                 <li>☐ 支持自定义字段映射</li>
                 <li>☐ 支持 Enum 转换</li>
+                <li>☐ 支持 Map 转换</li>
                 <li>☐ 支持 Builder 模式</li>
+                <li>☐ 支持嵌套对象自动转换</li>
                 <li>☐ 支持条件映射</li>
                 <li>☐ 支持自定义转换器</li>
             </ul>
@@ -249,17 +238,13 @@ List&lt;UserDto&gt; dtos = UserDtoCopier.toDtoList(users);</code></pre>
             <h2>许可证</h2>
             <p>本项目采用 Apache License 2.0 许可证。</p>
             
-            <h2>版本历史</h2>
-            
-            <h3>1.1.0（2025-12-23）</h3>
+            <h2>联系方式</h2>
             <ul>
-                <li>集合深拷贝：支持 List/Set/Map/数组（含多维），嵌套组合安全处理</li>
-                <li>原始类型 / 无界通配符集合自动降级浅拷贝并给出编译期警告</li>
-                <li>新增批量方法：toDtoMap/fromDtoMap、toDtoArray/fromDtoArray</li>
-                <li>null 元素与集合安全处理，集合容量预分配以减少扩容开销</li>
-                <li>文档与 Javadoc 完善（参考、快速入门、FAQ、API 打包发布）</li>
-                <li>继续保持零运行时反射与 Java 8+ 兼容</li>
+                <li><strong>GitHub Issues：</strong> <a href="https://github.com/fast-bean-copier/fast-bean-copier/issues" target="_blank">https://github.com/fast-bean-copier/fast-bean-copier/issues</a></li>
+                <li><strong>GitHub Discussions：</strong> <a href="https://github.com/fast-bean-copier/fast-bean-copier/discussions" target="_blank">https://github.com/fast-bean-copier/fast-bean-copier/discussions</a></li>
             </ul>
+            
+            <h2>版本历史</h2>
             
             <h3>1.0.0（2025-12-13）</h3>
             <ul>
@@ -273,16 +258,6 @@ List&lt;UserDto&gt; dtos = UserDtoCopier.toDtoList(users);</code></pre>
                 <li>完整的文档和示例</li>
             </ul>
             
-            <h2>项目统计</h2>
-            <ul>
-                <li><strong>源代码行数</strong>：~3000 行</li>
-                <li><strong>测试代码行数</strong>：~1800 行</li>
-                <li><strong>文档行数</strong>：~3500 行</li>
-                <li><strong>总代码行数</strong>：~8300 行</li>
-                <li><strong>测试用例数</strong>：71 个</li>
-                <li><strong>文档文件数</strong>：7 个</li>
-            </ul>
-            
             <h2>最后的话</h2>
             <p>Fast Bean Copier 是一个简洁、高效、易用的 Bean 拷贝工具。我们希望它能帮助您简化 Java 开发中的 Bean 映射工作。</p>
             <p>如果您喜欢这个项目，请给我们一个 Star ⭐！</p>
@@ -294,7 +269,5 @@ List&lt;UserDto&gt; dtos = UserDtoCopier.toDtoList(users);</code></pre>
         <p>&copy; 2025 Fast Bean Copier. All rights reserved.</p>
         <p>采用 Apache License 2.0 许可证</p>
     </footer>
-    
-    <script src="script.js"></script>
 </body>
 </html>

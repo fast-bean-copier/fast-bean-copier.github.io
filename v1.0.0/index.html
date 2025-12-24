@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Fast Bean Copier 文档</title>
+    <title>Fast Bean Copier 1.0.0 文档</title>
     <link rel="icon" type="image/png" href="favicon.png">
     <link rel="stylesheet" href="styles.css">
 </head>
@@ -15,7 +15,7 @@
                 <h1>🚀 Fast Bean Copier</h1>
             </div>
             <p>高性能的 Java Bean 拷贝工具</p>
-            <div class="version-badge">最新版本 1.1.0</div>
+            <div class="version-badge">版本 1.0.0</div>
         </div>
     </header>
     
@@ -37,10 +37,6 @@
             
             <p>Fast Bean Copier 是一个基于注解处理器的 Java Bean 拷贝工具，用于生成类型安全、高性能且零依赖的 Bean 映射代码。</p>
             
-            <div class="highlight-box">
-                <p><strong>v1.1.0 新特性：</strong>集合/数组字段深拷贝（含嵌套与多维），双向拷贝，raw/无界通配符集合自动降级为浅拷贝并给出编译期警告。</p>
-            </div>
-            
             <h2>✨ 核心特性</h2>
             <div class="feature-grid">
                 <div class="feature-card">
@@ -61,7 +57,7 @@
                 </div>
                 <div class="feature-card">
                     <h3>🔄 完整功能</h3>
-                    <p>支持字段忽略、类型转换、集合深拷贝、双向拷贝</p>
+                    <p>支持字段忽略、类型转换、集合处理、双向拷贝</p>
                 </div>
                 <div class="feature-card">
                     <h3>📚 完整文档</h3>
@@ -76,13 +72,13 @@
             <pre><code>&lt;dependency&gt;
     &lt;groupId&gt;com.github.jackieonway&lt;/groupId&gt;
     &lt;artifactId&gt;fast-bean-copier-annotations&lt;/artifactId&gt;
-    &lt;version&gt;1.1.0&lt;/version&gt;
+    &lt;version&gt;1.0.0&lt;/version&gt;
 &lt;/dependency&gt;
 
 &lt;dependency&gt;
     &lt;groupId&gt;com.github.jackieonway&lt;/groupId&gt;
     &lt;artifactId&gt;fast-bean-copier-processor&lt;/artifactId&gt;
-    &lt;version&gt;1.1.0&lt;/version&gt;
+    &lt;version&gt;1.0.0&lt;/version&gt;
     &lt;scope&gt;provided&lt;/scope&gt;
 &lt;/dependency&gt;</code></pre>
             
@@ -113,14 +109,6 @@ UserDto userDto = UserDtoCopier.toDto(user);</code></pre>
                     <li><a href="changelog.html">更新日志</a> - 版本变更记录</li>
                 </ul>
             </div>
-            
-            <h2>📦 版本历史</h2>
-            <ul>
-                <li><strong>1.1.0</strong> (2025-12-23) - 集合/数组深拷贝，支持嵌套组合与多维数组</li>
-                <li><strong>1.0.0</strong> (2025-12-13) - 初始版本发布</li>
-            </ul>
-            
-            <p style="margin-top: 30px;"><a href="v1.0.0/index.html">查看 1.0.0 版本文档</a></p>
         </div>
     </div>
     
@@ -132,4 +120,3 @@ UserDto userDto = UserDtoCopier.toDto(user);</code></pre>
     <script src="script.js"></script>
 </body>
 </html>
-

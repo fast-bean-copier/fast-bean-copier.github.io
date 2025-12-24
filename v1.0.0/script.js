@@ -104,4 +104,3 @@ function searchContent(query) {
     }
     return false;
 }
-

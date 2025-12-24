@@ -15,7 +15,7 @@
                 <h1>🚀 Fast Bean Copier</h1>
             </div>
             <p>高性能的 Java Bean 拷贝工具</p>
-            <div class="version-badge">最新版本 1.1.0</div>
+            <div class="version-badge">版本 1.0.0</div>
         </div>
     </header>
     
@@ -33,11 +33,7 @@
     
     <div class="container">
         <div class="content">
-            <h1>Fast Bean Copier 快速入门指南</h1>
-            
-            <div class="highlight-box">
-                <p><strong>v1.1 新特性：</strong>集合/数组字段深拷贝（含嵌套与多维），双向拷贝，raw/无界通配符集合自动降级为浅拷贝并给出编译期警告。</p>
-            </div>
+            <h1>快速入门指南</h1>
             
             <h2>5 分钟快速开始</h2>
             
@@ -46,13 +42,13 @@
             <pre><code>&lt;dependency&gt;
     &lt;groupId&gt;com.github.jackieonway&lt;/groupId&gt;
     &lt;artifactId&gt;fast-bean-copier-annotations&lt;/artifactId&gt;
-    &lt;version&gt;1.1.0&lt;/version&gt;
+    &lt;version&gt;1.0.0&lt;/version&gt;
 &lt;/dependency&gt;
 
 &lt;dependency&gt;
     &lt;groupId&gt;com.github.jackieonway&lt;/groupId&gt;
     &lt;artifactId&gt;fast-bean-copier-processor&lt;/artifactId&gt;
-    &lt;version&gt;1.1.0&lt;/version&gt;
+    &lt;version&gt;1.0.0&lt;/version&gt;
     &lt;scope&gt;provided&lt;/scope&gt;
 &lt;/dependency&gt;</code></pre>
             
@@ -88,17 +84,6 @@ public class UserDto {
     private Integer age;
     
     // getter/setter...
-    public Long getId() { return id; }
-    public void setId(Long id) { this.id = id; }
-    
-    public String getName() { return name; }
-    public void setName(String name) { this.name = name; }
-    
-    public String getEmail() { return email; }
-    public void setEmail(String email) { this.email = email; }
-    
-    public Integer getAge() { return age; }
-    public void setAge(Integer age) { this.age = age; }
 }</code></pre>
             
             <h3>步骤 4：编译</h3>
@@ -158,43 +143,6 @@ Set&lt;UserDto&gt; dtoSet = UserDtoCopier.toDtoSet(users);
 List&lt;User&gt; users = UserDtoCopier.fromDtoList(dtos);
 Set&lt;User&gt; userSet = UserDtoCopier.fromDtoSet(dtoSet);</code></pre>
             
-            <h3>场景 5：集合深拷贝（嵌套对象）</h3>
-            <pre><code>Order order = new Order(1L,
-        Arrays.asList("paid", "delivered"),
-        Collections.singletonList(new User(1L, "Tom", "tom@test.com", 20)));
-
-OrderDto orderDto = OrderDtoCopier.toDto(order);
-List&lt;OrderDto&gt; orderDtos = OrderDtoCopier.toDtoList(Collections.singletonList(order));
-
-// 反向转换
-Order restored = OrderDtoCopier.fromDto(orderDto);
-List&lt;Order&gt; restoredList = OrderDtoCopier.fromDtoList(orderDtos);</code></pre>
-            
-            <h3>场景 6：数组与 Map 深拷贝</h3>
-            <pre><code>ArrayHolder holder = new ArrayHolder(
-        1L,
-        new String[]{"a", "b"},
-        new int[]{1, 2, 3},
-        new User[]{new User(1L, "Jerry", "j@test.com", 18)}
-);
-ArrayHolderDto holderDto = ArrayHolderDtoCopier.toDto(holder);
-ArrayHolder restored = ArrayHolderDtoCopier.fromDto(holderDto);
-
-MapHolder mapHolder = new MapHolder(
-        1L,
-        Collections.singletonMap("k1", "v1"),
-        Collections.singletonMap("u1", new User(2L, "Lucy", "l@test.com", 22))
-);
-MapHolderDto mapHolderDto = MapHolderDtoCopier.toDto(mapHolder);
-MapHolder restoredMapHolder = MapHolderDtoCopier.fromDto(mapHolderDto);</code></pre>
-            
-            <h3>场景 7：DTO 反向拷贝</h3>
-            <pre><code>UserDto dto = new UserDto(1L, "Amy", "amy@test.com", 25);
-User entity = UserDtoCopier.fromDto(dto);
-
-Set&lt;UserDto&gt; dtoSet = new LinkedHashSet&lt;&gt;(Collections.singleton(dto));
-Set&lt;User&gt; entities = UserDtoCopier.fromDtoSet(dtoSet);</code></pre>
-            
             <h2>故障排除</h2>
             
             <h3>问题：生成的 Copier 类未出现</h3>
@@ -229,13 +177,6 @@ Set&lt;User&gt; entities = UserDtoCopier.fromDtoSet(dtoSet);</code></pre>
                     <li><a href="faq.html">查看常见问题</a> - 常见问题和解决方案</li>
                 </ul>
             </div>
-            
-            <h2>提示</h2>
-            <ul>
-                <li>使用 Lombok 的 <code>@Data</code> 注解可以自动生成 getter/setter</li>
-                <li>生成的 Copier 类是无状态的，可以安全地在多线程环境中使用</li>
-                <li>生成的代码性能与手写代码相同</li>
-            </ul>
         </div>
     </div>
     
@@ -243,8 +184,5 @@ Set&lt;User&gt; entities = UserDtoCopier.fromDtoSet(dtoSet);</code></pre>
         <p>&copy; 2025 Fast Bean Copier. All rights reserved.</p>
         <p>采用 Apache License 2.0 许可证</p>
     </footer>
-    
-    <script src="script.js"></script>
 </body>
 </html>
-

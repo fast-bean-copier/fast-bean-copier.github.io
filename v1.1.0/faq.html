@@ -4,18 +4,18 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>常见问题 - Fast Bean Copier</title>
-    <link rel="icon" type="image/png" href="favicon.png">
-    <link rel="stylesheet" href="styles.css">
+    <link rel="icon" type="image/png" href="../favicon.png">
+    <link rel="stylesheet" href="../styles.css">
 </head>
 <body>
     <header>
         <div class="container">
             <div class="logo-container">
-                <img src="logo.png" alt="Fast Bean Copier Logo" class="logo">
+                <img src="../logo.png" alt="Fast Bean Copier Logo" class="logo">
                 <h1>🚀 Fast Bean Copier</h1>
             </div>
             <p>高性能的 Java Bean 拷贝工具</p>
-            <div class="version-badge">最新版本 1.2.0</div>
+            <div class="version-badge">最新版本 1.1.0</div>
         </div>
     </header>
     
@@ -40,9 +40,6 @@
             
             <h2>基本问题</h2>
             
-            <h3>Q: v1.2 有哪些新增/改进？</h3>
-            <p><strong>A</strong>: 主要新增多字段映射（多对一、一对多）、6 种内置 TypeConverter 类型转换器（NumberFormatter、NumberParser、DateFormatter、DateParser、EnumStringConverter、JsonConverter）、表达式映射、依赖注入支持（Spring/CDI/JSR330）、函数式定制拷贝。</p>
-            
             <h3>Q: v1.1 有哪些新增/改进？</h3>
             <p><strong>A</strong>: 主要新增集合与数组字段的深拷贝，涵盖 List/Set/Map/数组及其嵌套组合，支持双向拷贝、null 元素安全处理、容量预分配，以及对原始类型/无界通配符集合的安全降级（回退浅拷贝并给出编译期告警）。</p>
             
@@ -64,8 +61,8 @@
             <h3>Q: 可以在 Gradle 项目中使用吗？</h3>
             <p><strong>A</strong>: 可以。在 <code>build.gradle</code> 中添加：</p>
             <pre><code>dependencies {
-    implementation 'com.github.jackieonway:fast-bean-copier-annotations:1.2.0'
-    annotationProcessor 'com.github.jackieonway:fast-bean-copier-processor:1.2.0'
+    implementation 'com.github.jackieonway:fast-bean-copier-annotations:1.1.0'
+    annotationProcessor 'com.github.jackieonway:fast-bean-copier-processor:1.1.0'
 }</code></pre>
             
             <h2>功能问题</h2>
@@ -84,56 +81,10 @@ public class UserDto {
             <p><strong>A</strong>: 遇到 <code>List</code>、<code>Set</code>、<code>Map</code> 的 raw type 或 <code>?</code>/<code>? super</code> 等无法安全解析的通配符时，会回退为浅拷贝并输出编译期警告，建议为集合添加明确泛型。</p>
             
             <h3>Q: 支持自定义转换器吗？</h3>
-            <p><strong>A</strong>: 支持（v1.2.0+）。可以通过以下方式使用自定义转换器：</p>
-            <ul>
-                <li>使用内置 TypeConverter：<code>@CopyField(converter = NumberFormatter.class, format = "#,##0.00")</code></li>
-                <li>使用自定义转换器类：<code>@CopyTarget(source = User.class, uses = {CustomConverter.class})</code></li>
-                <li>使用具名方法：<code>@CopyField(qualifiedByName = "methodName")</code></li>
-            </ul>
+            <p><strong>A</strong>: 当前版本不支持。可以在应用层手动处理特殊字段的转换。</p>
             
             <h3>Q: 支持 Enum 转换吗？</h3>
-            <p><strong>A</strong>: 支持（v1.2.0+）。使用内置的 <code>EnumStringConverter</code>：</p>
-            <pre><code>@CopyField(converter = EnumStringConverter.class)
-private String statusText;  // Status.ACTIVE -> "ACTIVE"</code></pre>
-            
-            <h3>Q: 如何使用依赖注入？</h3>
-            <p><strong>A</strong>: 使用 <code>componentModel</code> 属性指定依赖注入框架（v1.2.0+）：</p>
-            <pre><code>// Spring
-@CopyTarget(source = User.class, componentModel = ComponentModel.SPRING)
-public class UserDto { }
-
-// CDI
-@CopyTarget(source = User.class, componentModel = ComponentModel.CDI)
-public class UserDto { }
-
-// JSR-330
-@CopyTarget(source = User.class, componentModel = ComponentModel.JSR330)
-public class UserDto { }</code></pre>
-            
-            <h3>Q: 如何进行多字段映射？</h3>
-            <p><strong>A</strong>: 使用 <code>@CopyField</code> 注解的 <code>source</code> 和 <code>expression</code> 属性（v1.2.0+）：</p>
-            <pre><code>// 多对一：firstName + lastName -> fullName
-@CopyField(source = {"firstName", "lastName"}, 
-           expression = "source.getFirstName() + \" \" + source.getLastName()")
-private String fullName;
-
-// 一对多：fullName -> firstName
-@CopyField(source = "fullName", 
-           expression = "source.getFullName().split(\" \")[0]")
-private String firstName;</code></pre>
-            
-            <h3>Q: 如何使用函数式定制？</h3>
-            <p><strong>A</strong>: 使用带 <code>UnaryOperator</code> 参数的重载方法（v1.2.0+）：</p>
-            <pre><code>UserDto dto = UserDtoCopier.toDto(user, result -> {
-    result.setDisplayName(result.getName().toUpperCase());
-    return result;
-});
-
-// 批量转换
-List&lt;UserDto&gt; dtos = UserDtoCopier.toDtoList(users, result -> {
-    result.setTimestamp(System.currentTimeMillis());
-    return result;
-});</code></pre>
+            <p><strong>A</strong>: 当前版本不支持 Enum 的自动转换。可以在应用层手动处理。</p>
             
             <h3>Q: 支持 Map 转换吗？</h3>
             <p><strong>A</strong>: 支持（v1.1.0+）。Key 通常直接拷贝（如 String/基本类型），Value 会按深拷贝规则处理；Map 为 null 时保持 null，Value 为 null 时保留；嵌套集合/数组的 Map 也会递归处理。</p>
@@ -367,7 +318,7 @@ public class UserDto {
         <p>采用 Apache License 2.0 许可证</p>
     </footer>
     
-    <script src="script.js"></script>
+    <script src="../script.js"></script>
 </body>
 </html>
 

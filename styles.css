@@ -344,3 +344,43 @@ footer p {
     }
 }
 
+
+/* 版本历史表格 */
+.version-history-box {
+    background: #f9f9f9;
+    border-radius: 8px;
+    padding: 20px;
+    margin: 20px 0;
+    border-left: 4px solid #667eea;
+}
+
+.version-table {
+    margin-bottom: 0;
+}
+
+.version-table th {
+    background: #667eea;
+    color: white;
+    padding: 10px 15px;
+    font-weight: 600;
+}
+
+.version-table td {
+    padding: 10px 15px;
+}
+
+.version-table a {
+    color: #667eea;
+    text-decoration: none;
+    font-weight: 600;
+}
+
+.version-table a:hover {
+    text-decoration: underline;
+    color: #764ba2;
+}
+
+.current-version {
+    color: #28a745;
+    font-weight: 600;
+}

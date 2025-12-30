@@ -4,18 +4,18 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>快速入门 - Fast Bean Copier</title>
-    <link rel="icon" type="image/png" href="favicon.png">
-    <link rel="stylesheet" href="styles.css">
+    <link rel="icon" type="image/png" href="../favicon.png">
+    <link rel="stylesheet" href="../styles.css">
 </head>
 <body>
     <header>
         <div class="container">
             <div class="logo-container">
-                <img src="logo.png" alt="Fast Bean Copier Logo" class="logo">
+                <img src="../logo.png" alt="Fast Bean Copier Logo" class="logo">
                 <h1>🚀 Fast Bean Copier</h1>
             </div>
             <p>高性能的 Java Bean 拷贝工具</p>
-            <div class="version-badge">最新版本 1.2.0</div>
+            <div class="version-badge">最新版本 1.1.0</div>
         </div>
     </header>
     
@@ -36,7 +36,7 @@
             <h1>Fast Bean Copier 快速入门指南</h1>
             
             <div class="highlight-box">
-                <p><strong>v1.2 新特性：</strong>多字段映射（多对一、一对多）、TypeConverter 类型转换器、依赖注入支持（Spring/CDI/JSR330）、函数式定制拷贝。</p>
+                <p><strong>v1.1 新特性：</strong>集合/数组字段深拷贝（含嵌套与多维），双向拷贝，raw/无界通配符集合自动降级为浅拷贝并给出编译期警告。</p>
             </div>
             
             <h2>5 分钟快速开始</h2>
@@ -46,13 +46,13 @@
             <pre><code>&lt;dependency&gt;
     &lt;groupId&gt;com.github.jackieonway&lt;/groupId&gt;
     &lt;artifactId&gt;fast-bean-copier-annotations&lt;/artifactId&gt;
-    &lt;version&gt;1.2.0&lt;/version&gt;
+    &lt;version&gt;1.1.0&lt;/version&gt;
 &lt;/dependency&gt;
 
 &lt;dependency&gt;
     &lt;groupId&gt;com.github.jackieonway&lt;/groupId&gt;
     &lt;artifactId&gt;fast-bean-copier-processor&lt;/artifactId&gt;
-    &lt;version&gt;1.2.0&lt;/version&gt;
+    &lt;version&gt;1.1.0&lt;/version&gt;
     &lt;scope&gt;provided&lt;/scope&gt;
 &lt;/dependency&gt;</code></pre>
             
@@ -195,78 +195,6 @@ User entity = UserDtoCopier.fromDto(dto);
 Set&lt;UserDto&gt; dtoSet = new LinkedHashSet&lt;&gt;(Collections.singleton(dto));
 Set&lt;User&gt; entities = UserDtoCopier.fromDtoSet(dtoSet);</code></pre>
             
-            <h2>v1.2 新功能</h2>
-            
-            <h3>多对一映射</h3>
-            <pre><code>@CopyTarget(source = Person.class)
-public class PersonDto {
-    @CopyField(source = {"firstName", "lastName"}, 
-               expression = "source.getFirstName() + \" \" + source.getLastName()")
-    private String fullName;
-}</code></pre>
-            
-            <h3>一对多映射</h3>
-            <pre><code>@CopyTarget(source = FullNameSource.class)
-public class NameDto {
-    @CopyField(source = "fullName", 
-               expression = "source.getFullName().split(\" \")[0]")
-    private String firstName;
-}</code></pre>
-            
-            <h3>数字格式化</h3>
-            <pre><code>@CopyField(converter = NumberFormatter.class, format = "#,##0.00元")
-private String priceText;  // 1234.5 -> "1,234.50元"</code></pre>
-            
-            <h3>日期格式化</h3>
-            <pre><code>@CopyField(converter = DateFormatter.class, format = "yyyy-MM-dd HH:mm:ss")
-private String createTimeText;  // LocalDateTime -> "2025-12-29 10:30:00"</code></pre>
-            
-            <h3>自定义转换器</h3>
-            <pre><code>@CopyTarget(source = Person.class, uses = PersonConverter.class)
-public class PersonDto {
-    @CopyField(qualifiedByName = "formatAge")
-    private String ageText;
-}</code></pre>
-            
-            <h3>Spring 集成</h3>
-            <pre><code>@CopyTarget(source = User.class, componentModel = ComponentModel.SPRING)
-public class UserDto { }
-
-@Service
-public class UserService {
-    @Autowired
-    private UserDtoCopier userDtoCopier;
-    
-    public UserDto convert(User user) {
-        return userDtoCopier.toDto(user);
-    }
-}</code></pre>
-            
-            <h3>函数式定制</h3>
-            <pre><code>UserDto dto = UserDtoCopier.toDto(user, result -> {
-    result.setDisplayName(result.getName().toUpperCase());
-    return result;
-});
-
-// 批量转换时也支持
-List&lt;UserDto&gt; dtos = UserDtoCopier.toDtoList(users, result -> {
-    result.setTimestamp(System.currentTimeMillis());
-    return result;
-});
-
-// 反向转换
-User entity = UserDtoCopier.fromDto(userDto, result -> {
-    result.setLastSynced(Instant.now());
-    return result;
-});
-
-// Set 转换
-Set&lt;UserDto&gt; dtoSet = UserDtoCopier.toDtoSet(userSet, result -> {
-    result.setSource("batch");
-    return result;
-});</code></pre>
-            <p><strong>注意</strong>：Map 和数组方法（<code>toDtoMap</code>、<code>toDtoArray</code> 等）暂不支持函数式重载。</p>
-            
             <h2>故障排除</h2>
             
             <h3>问题：生成的 Copier 类未出现</h3>
@@ -316,7 +244,7 @@ Set&lt;UserDto&gt; dtoSet = UserDtoCopier.toDtoSet(userSet, result -> {
         <p>采用 Apache License 2.0 许可证</p>
     </footer>
     
-    <script src="script.js"></script>
+    <script src="../script.js"></script>
 </body>
 </html>
 

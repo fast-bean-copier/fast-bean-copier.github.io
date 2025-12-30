@@ -4,18 +4,18 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>参考文档 - Fast Bean Copier</title>
-    <link rel="icon" type="image/png" href="favicon.png">
-    <link rel="stylesheet" href="styles.css">
+    <link rel="icon" type="image/png" href="../favicon.png">
+    <link rel="stylesheet" href="../styles.css">
 </head>
 <body>
     <header>
         <div class="container">
             <div class="logo-container">
-                <img src="logo.png" alt="Fast Bean Copier Logo" class="logo">
+                <img src="../logo.png" alt="Fast Bean Copier Logo" class="logo">
                 <h1>🚀 Fast Bean Copier</h1>
             </div>
             <p>高性能的 Java Bean 拷贝工具</p>
-            <div class="version-badge">最新版本 1.2.0</div>
+            <div class="version-badge">最新版本 1.1.0</div>
         </div>
     </header>
     
@@ -33,7 +33,7 @@
     
     <div class="container">
         <div class="content">
-            <h1>Fast Bean Copier 1.2.0 参考文档</h1>
+            <h1>Fast Bean Copier 1.1.0 参考文档</h1>
             
             <h2>前言</h2>
             <p>本文档是 Fast Bean Copier 的参考文档，Fast Bean Copier 是一个基于注解处理器的 Java Bean 拷贝工具，用于生成类型安全、高性能且零依赖的 Bean 映射代码。</p>
@@ -72,13 +72,13 @@
             <pre><code>&lt;dependency&gt;
     &lt;groupId&gt;com.github.jackieonway&lt;/groupId&gt;
     &lt;artifactId&gt;fast-bean-copier-annotations&lt;/artifactId&gt;
-    &lt;version&gt;1.2.0&lt;/version&gt;
+    &lt;version&gt;1.1.0&lt;/version&gt;
 &lt;/dependency&gt;
 
 &lt;dependency&gt;
     &lt;groupId&gt;com.github.jackieonway&lt;/groupId&gt;
     &lt;artifactId&gt;fast-bean-copier-processor&lt;/artifactId&gt;
-    &lt;version&gt;1.2.0&lt;/version&gt;
+    &lt;version&gt;1.1.0&lt;/version&gt;
     &lt;scope&gt;provided&lt;/scope&gt;
 &lt;/dependency&gt;</code></pre>
             <p>注意：处理器依赖应该使用 <code>provided</code> 作用域，因为它只在编译时需要。</p>
@@ -86,8 +86,8 @@
             <h3>2.2. Gradle</h3>
             <p>要在 Gradle 项目中使用 Fast Bean Copier，请在您的 <code>build.gradle</code> 中添加以下依赖：</p>
             <pre><code>dependencies {
-    implementation 'com.github.jackieonway:fast-bean-copier-annotations:1.2.0'
-    annotationProcessor 'com.github.jackieonway:fast-bean-copier-processor:1.2.0'
+    implementation 'com.github.jackieonway:fast-bean-copier-annotations:1.1.0'
+    annotationProcessor 'com.github.jackieonway:fast-bean-copier-processor:1.1.0'
 }</code></pre>
             
             <h3>2.3. Java 版本要求</h3>
@@ -148,9 +148,7 @@ Set&lt;User&gt; convertedUserSet = UserDtoCopier.fromDtoSet(userDtoSet);</code><
             <h3>4.1. 注解属性</h3>
             <pre><code>@CopyTarget(
     source = User.class,           // 必需：指定源类
-    ignore = {"password", "token"}, // 可选：指定要忽略的字段
-    uses = {CustomConverter.class}, // 可选：自定义转换器类（v1.2）
-    componentModel = ComponentModel.SPRING // 可选：依赖注入框架（v1.2）
+    ignore = {"password", "token"} // 可选：指定要忽略的字段
 )
 public class UserDto {
     // ...
@@ -158,8 +156,6 @@ public class UserDto {
             <ul>
                 <li><strong>source</strong> - 源类的类型。必需。</li>
                 <li><strong>ignore</strong> - 要忽略的字段名数组。可选。这些字段不会被拷贝。</li>
-                <li><strong>uses</strong> - 自定义转换器类列表。可选。（v1.2 新增）</li>
-                <li><strong>componentModel</strong> - 依赖注入框架选择。可选。（v1.2 新增）</li>
             </ul>
             
             <h3>4.2. 字段忽略示例</h3>
@@ -272,196 +268,6 @@ List&lt;UserDto&gt; dtos = UserDtoCopier.toDtoList(Arrays.asList(user1, null, us
                 <li>Raw/无界通配符集合将降级为浅拷贝并给出编译期警告，建议为集合声明明确泛型。</li>
                 <li>生成的顶层方法：<code>toDtoMap/fromDtoMap</code> 保留 Key 并对 Value 做深拷贝；<code>toDtoArray/fromDtoArray</code> 支持数组双向转换。</li>
             </ul>
-            
-            <h2>7. 多字段映射（v1.2）</h2>
-            
-            <h3>7.1. 多对一映射</h3>
-            <p>将多个源字段合并映射到一个目标字段：</p>
-            <pre><code>@CopyTarget(source = Person.class)
-public class PersonDto {
-    @CopyField(source = {"firstName", "lastName"}, 
-               expression = "source.getFirstName() + \" \" + source.getLastName()")
-    private String fullName;
-}</code></pre>
-            
-            <h3>7.2. 一对多映射</h3>
-            <p>将一个源字段拆分映射到多个目标字段：</p>
-            <pre><code>@CopyTarget(source = FullNameSource.class)
-public class NameDto {
-    @CopyField(source = "fullName", 
-               expression = "source.getFullName().split(\" \")[0]")
-    private String firstName;
-    
-    @CopyField(source = "fullName", 
-               expression = "source.getFullName().split(\" \")[1]")
-    private String lastName;
-}</code></pre>
-            
-            <h2>8. TypeConverter 类型转换器（v1.2）</h2>
-            
-            <h3>8.1. 内置转换器</h3>
-            <p>Fast Bean Copier 提供 6 种内置类型转换器：</p>
-            <table>
-                <thead>
-                    <tr>
-                        <th>转换器</th>
-                        <th>源类型</th>
-                        <th>目标类型</th>
-                        <th>说明</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr><td><code>NumberFormatter</code></td><td><code>Number</code></td><td><code>String</code></td><td>数字格式化</td></tr>
-                    <tr><td><code>NumberParser</code></td><td><code>String</code></td><td><code>Number</code></td><td>字符串解析为数字</td></tr>
-                    <tr><td><code>DateFormatter</code></td><td><code>Date/LocalDate/LocalDateTime</code></td><td><code>String</code></td><td>日期格式化</td></tr>
-                    <tr><td><code>DateParser</code></td><td><code>String</code></td><td><code>Date/LocalDate/LocalDateTime</code></td><td>字符串解析为日期</td></tr>
-                    <tr><td><code>EnumStringConverter</code></td><td><code>Enum</code></td><td><code>String/Integer</code></td><td>枚举转换</td></tr>
-                    <tr><td><code>JsonConverter</code></td><td><code>Object</code></td><td><code>String</code></td><td>JSON 序列化</td></tr>
-                </tbody>
-            </table>
-            
-            <h3>8.2. 使用示例</h3>
-            <pre><code>@CopyTarget(source = Order.class)
-public class OrderDto {
-    // 数字格式化
-    @CopyField(converter = NumberFormatter.class, format = "#,##0.00元")
-    private String priceText;
-    
-    // 日期格式化
-    @CopyField(converter = DateFormatter.class, format = "yyyy-MM-dd HH:mm:ss")
-    private String createTimeText;
-    
-    // 枚举转换
-    @CopyField(converter = EnumStringConverter.class)
-    private String statusText;
-}</code></pre>
-            
-            <h2>9. 依赖注入支持（v1.2）</h2>
-            
-            <h3>9.1. ComponentModel 枚举</h3>
-            <table>
-                <thead>
-                    <tr>
-                        <th>值</th>
-                        <th>说明</th>
-                        <th>生成的注解</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr><td><code>DEFAULT</code></td><td>无依赖注入，使用静态方法</td><td>无</td></tr>
-                    <tr><td><code>SPRING</code></td><td>Spring 框架</td><td><code>@Component</code></td></tr>
-                    <tr><td><code>CDI</code></td><td>CDI 框架</td><td><code>@ApplicationScoped</code></td></tr>
-                    <tr><td><code>JSR330</code></td><td>JSR-330 标准</td><td><code>@Named</code> + <code>@Singleton</code></td></tr>
-                </tbody>
-            </table>
-            
-            <h3>9.2. Spring 集成示例</h3>
-            <pre><code>@CopyTarget(source = User.class, componentModel = ComponentModel.SPRING)
-public class UserDto { }
-
-@Service
-public class UserService {
-    @Autowired
-    private UserDtoCopier userDtoCopier;
-    
-    public UserDto convert(User user) {
-        return userDtoCopier.toDto(user);
-    }
-}</code></pre>
-            
-            <h2>10. 函数式定制拷贝（v1.2）</h2>
-            <p>支持在拷贝完成后立即执行自定义逻辑。函数类型为 <code>java.util.function.UnaryOperator&lt;T&gt;</code>，保证入参与出参一致。</p>
-            
-            <h3>10.1. 支持的方法</h3>
-            <table>
-                <thead>
-                    <tr>
-                        <th>方法</th>
-                        <th>函数式重载</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr><td><code>toDto</code></td><td>✅ <code>toDto(source, customizer)</code></td></tr>
-                    <tr><td><code>fromDto</code></td><td>✅ <code>fromDto(source, customizer)</code></td></tr>
-                    <tr><td><code>toDtoList</code></td><td>✅ <code>toDtoList(sources, customizer)</code></td></tr>
-                    <tr><td><code>toDtoSet</code></td><td>✅ <code>toDtoSet(sources, customizer)</code></td></tr>
-                    <tr><td><code>fromDtoList</code></td><td>✅ <code>fromDtoList(sources, customizer)</code></td></tr>
-                    <tr><td><code>fromDtoSet</code></td><td>✅ <code>fromDtoSet(sources, customizer)</code></td></tr>
-                    <tr><td><code>toDtoMap</code></td><td>❌ 暂不支持</td></tr>
-                    <tr><td><code>fromDtoMap</code></td><td>❌ 暂不支持</td></tr>
-                    <tr><td><code>toDtoArray</code></td><td>❌ 暂不支持</td></tr>
-                    <tr><td><code>fromDtoArray</code></td><td>❌ 暂不支持</td></tr>
-                </tbody>
-            </table>
-            
-            <h3>10.2. 使用示例</h3>
-            <pre><code>// 单个对象
-UserDto dto = UserDtoCopier.toDto(user, result -> {
-    result.setDisplayName(result.getName().toUpperCase());
-    return result;
-});
-
-// 反向转换
-User entity = UserDtoCopier.fromDto(userDto, result -> {
-    result.setLastSynced(Instant.now());
-    return result;
-});
-
-// 批量转换
-List&lt;UserDto&gt; dtos = UserDtoCopier.toDtoList(users, result -> {
-    result.setTimestamp(System.currentTimeMillis());
-    return result;
-});
-
-// Set 转换
-Set&lt;UserDto&gt; dtoSet = UserDtoCopier.toDtoSet(userSet, result -> {
-    result.setSource("batch");
-    return result;
-});</code></pre>
-            
-            <h3>10.3. null 安全</h3>
-            <p>当源对象为 null 时，customizer 函数不会被调用：</p>
-            <pre><code>UserDto dto = UserDtoCopier.toDto(null, result -> {
-    // 这里不会执行
-    return result;
-});
-// dto 为 null</code></pre>
-            
-            <h2>11. 自定义转换器（v1.2）</h2>
-            
-            <h3>11.1. 使用 uses 引入转换器</h3>
-            <p>通过 <code>@CopyTarget</code> 的 <code>uses</code> 属性引入自定义转换器类：</p>
-            <pre><code>// 步骤1：定义转换器类
-@Component
-public class StringToListConverter {
-    public List&lt;String&gt; stringToList(String str) {
-        if (str == null) return null;
-        return Arrays.asList(str.split(","));
-    }
-    
-    public String listToString(List&lt;String&gt; list) {
-        if (list == null) return null;
-        return String.join(",", list);
-    }
-}
-
-// 步骤2：在 @CopyTarget 中使用
-@CopyTarget(source = User.class, uses = {StringToListConverter.class})
-public class UserDto {
-    @CopyField(source = "tags", qualifiedByName = "stringToList")
-    private List&lt;String&gt; tagList;
-}</code></pre>
-            
-            <h3>11.2. 使用 qualifiedByName 绑定方法</h3>
-            <p>通过 <code>qualifiedByName</code> 指定要调用的转换方法名：</p>
-            <pre><code>@CopyTarget(source = Person.class, uses = {PersonConverter.class})
-public class PersonDto {
-    @CopyField(qualifiedByName = "formatAge")
-    private String ageText;
-    
-    @CopyField(qualifiedByName = "statusToName")
-    private String statusText;
-}</code></pre>
             
             <h2>7. Null 值处理</h2>
             
@@ -662,10 +468,7 @@ public class UserDto {
             </ol>
             
             <h3>Q: 支持自定义转换器吗？</h3>
-            <p><strong>A</strong>: 支持（v1.2.0+）。可以使用内置 TypeConverter 或自定义转换器类。</p>
-            
-            <h3>Q: 支持依赖注入吗？</h3>
-            <p><strong>A</strong>: 支持（v1.2.0+）。通过 <code>componentModel</code> 属性选择 Spring、CDI 或 JSR-330。</p>
+            <p><strong>A</strong>: 当前版本不支持。可以在应用层手动处理特殊字段的转换。</p>
             
             <h3>Q: 生成的代码在哪里？</h3>
             <p><strong>A</strong>: 在 <code>target/generated-sources/annotations/</code> 目录下。</p>
@@ -695,22 +498,6 @@ public class UserDto {
             
             <h2>16. 版本历史</h2>
             
-            <h3>1.2.0（2025-12-29）</h3>
-            <ul>
-                <li>多字段映射：多对一、一对多转换</li>
-                <li>TypeConverter：6 种内置类型转换器</li>
-                <li>依赖注入：Spring、CDI、JSR-330 支持</li>
-                <li>函数式定制：UnaryOperator 重载方法</li>
-                <li>@CopyField 注解：字段级映射配置</li>
-            </ul>
-            
-            <h3>1.1.0（2025-12-23）</h3>
-            <ul>
-                <li>集合深拷贝：支持 List/Set/Map/数组（含多维），嵌套组合安全处理</li>
-                <li>原始类型 / 无界通配符集合自动降级浅拷贝并给出编译期警告</li>
-                <li>新增批量方法：toDtoMap/fromDtoMap、toDtoArray/fromDtoArray</li>
-            </ul>
-            
             <h3>1.0.0（2025-12-13）</h3>
             <ul>
                 <li>初始版本发布</li>
@@ -729,6 +516,6 @@ public class UserDto {
         <p>采用 Apache License 2.0 许可证</p>
     </footer>
     
-    <script src="script.js"></script>
+    <script src="../script.js"></script>
 </body>
 </html>

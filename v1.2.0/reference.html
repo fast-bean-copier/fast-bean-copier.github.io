@@ -4,18 +4,18 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>参考文档 - Fast Bean Copier</title>
-    <link rel="icon" type="image/png" href="favicon.png">
-    <link rel="stylesheet" href="styles.css">
+    <link rel="icon" type="image/png" href="../favicon.png">
+    <link rel="stylesheet" href="../styles.css">
 </head>
 <body>
     <header>
         <div class="container">
             <div class="logo-container">
-                <img src="logo.png" alt="Fast Bean Copier Logo" class="logo">
+                <img src="../logo.png" alt="Fast Bean Copier Logo" class="logo">
                 <h1>🚀 Fast Bean Copier</h1>
             </div>
             <p>高性能的 Java Bean 拷贝工具</p>
-            <div class="version-badge">最新版本 1.2.1</div>
+            <div class="version-badge">版本 1.2.0</div>
         </div>
     </header>
     
@@ -33,7 +33,7 @@
     
     <div class="container">
         <div class="content">
-            <h1>Fast Bean Copier 1.2.1 参考文档</h1>
+            <h1>Fast Bean Copier 1.2.0 参考文档</h1>
             
             <h2>前言</h2>
             <p>本文档是 Fast Bean Copier 的参考文档，Fast Bean Copier 是一个基于注解处理器的 Java Bean 拷贝工具，用于生成类型安全、高性能且零依赖的 Bean 映射代码。</p>
@@ -72,13 +72,13 @@
             <pre><code>&lt;dependency&gt;
     &lt;groupId&gt;com.github.jackieonway&lt;/groupId&gt;
     &lt;artifactId&gt;fast-bean-copier-annotations&lt;/artifactId&gt;
-    &lt;version&gt;1.2.1&lt;/version&gt;
+    &lt;version&gt;1.2.0&lt;/version&gt;
 &lt;/dependency&gt;
 
 &lt;dependency&gt;
     &lt;groupId&gt;com.github.jackieonway&lt;/groupId&gt;
     &lt;artifactId&gt;fast-bean-copier-processor&lt;/artifactId&gt;
-    &lt;version&gt;1.2.1&lt;/version&gt;
+    &lt;version&gt;1.2.0&lt;/version&gt;
     &lt;scope&gt;provided&lt;/scope&gt;
 &lt;/dependency&gt;</code></pre>
             <p>注意：处理器依赖应该使用 <code>provided</code> 作用域，因为它只在编译时需要。</p>
@@ -86,8 +86,8 @@
             <h3>2.2. Gradle</h3>
             <p>要在 Gradle 项目中使用 Fast Bean Copier，请在您的 <code>build.gradle</code> 中添加以下依赖：</p>
             <pre><code>dependencies {
-    implementation 'com.github.jackieonway:fast-bean-copier-annotations:1.2.1'
-    annotationProcessor 'com.github.jackieonway:fast-bean-copier-processor:1.2.1'
+    implementation 'com.github.jackieonway:fast-bean-copier-annotations:1.2.0'
+    annotationProcessor 'com.github.jackieonway:fast-bean-copier-processor:1.2.0'
 }</code></pre>
             
             <h3>2.3. Java 版本要求</h3>
@@ -695,15 +695,6 @@ public class UserDto {
             
             <h2>16. 版本历史</h2>
             
-            <h3>1.2.1（2026-01-08）</h3>
-            <ul>
-                <li>Bug 修复：多字段映射空指针异常</li>
-                <li>Bug 修复：TypeConverter null 值处理</li>
-                <li>Bug 修复：依赖注入初始化顺序</li>
-                <li>性能优化：代码生成性能</li>
-                <li>改进：编译期错误提示</li>
-            </ul>
-            
             <h3>1.2.0（2025-12-29）</h3>
             <ul>
                 <li>多字段映射：多对一、一对多转换</li>
@@ -734,10 +725,10 @@ public class UserDto {
     </div>
     
     <footer>
-        <p>&copy; 2026 Fast Bean Copier. All rights reserved.</p>
+        <p>&copy; 2025 Fast Bean Copier. All rights reserved.</p>
         <p>采用 Apache License 2.0 许可证</p>
     </footer>
     
-    <script src="script.js"></script>
+    <script src="../script.js"></script>
 </body>
 </html>

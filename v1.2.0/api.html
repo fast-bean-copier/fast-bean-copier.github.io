@@ -15,7 +15,7 @@
                 <h1>🚀 Fast Bean Copier</h1>
             </div>
             <p>高性能的 Java Bean 拷贝工具</p>
-            <div class="version-badge">版本 1.1.0</div>
+            <div class="version-badge">版本 1.2.0</div>
         </div>
     </header>
     
@@ -36,13 +36,13 @@
             <h1>Fast Bean Copier API 文档</h1>
             
             <div class="highlight-box">
-                <p><strong>v1.1 提示：</strong>新增 List/Set/Map/数组字段的深拷贝与反向拷贝，支持嵌套集合、多维数组，raw/无界通配符集合自动降级为浅拷贝并输出编译期警告。</p>
+                <p><strong>v1.2 新增：</strong>多字段映射（多对一、一对多）、TypeConverter 类型转换器、依赖注入支持（Spring/CDI/JSR330）、函数式定制拷贝。</p>
             </div>
             
             <h2>注解</h2>
             
             <h3>@CopyTarget</h3>
-            <p>标记目标 DTO 类，指定源类和要忽略的字段。</p>
+            <p>标记目标 DTO 类，指定源类、要忽略的字段、自定义转换器和组件模型。</p>
             
             <h4>声明</h4>
             <pre><code>@Target(ElementType.TYPE)
@@ -57,6 +57,16 @@ public @interface CopyTarget {
      * 要忽略的字段名数组。可选。
      */
     String[] ignore() default {};
+    
+    /**
+     * 自定义转换器类列表。可选。（v1.2）
+     */
+    Class&lt;?&gt;[] uses() default {};
+    
+    /**
+     * 组件模型（依赖注入框架）。可选。（v1.2）
+     */
+    ComponentModel componentModel() default ComponentModel.DEFAULT;
 }</code></pre>
             
             <h4>属性</h4>
@@ -82,6 +92,18 @@ public @interface CopyTarget {
                         <td>否</td>
                         <td>要忽略的字段名数组</td>
                     </tr>
+                    <tr>
+                        <td><code>uses</code></td>
+                        <td><code>Class&lt;?&gt;[]</code></td>
+                        <td>否</td>
+                        <td>自定义转换器类列表（v1.2）</td>
+                    </tr>
+                    <tr>
+                        <td><code>componentModel</code></td>
+                        <td><code>ComponentModel</code></td>
+                        <td>否</td>
+                        <td>依赖注入框架选择（v1.2）</td>
+                    </tr>
                 </tbody>
             </table>
             
@@ -96,11 +118,143 @@ public class UserDto {
 @CopyTarget(source = User.class, ignore = {"password", "token"})
 public class UserResponse {
     // ...
+}
+
+// 使用自定义转换器（v1.2）
+@CopyTarget(source = User.class, uses = {StringToListConverter.class})
+public class UserDto {
+    // ...
+}
+
+// Spring 集成（v1.2）
+@CopyTarget(source = User.class, componentModel = ComponentModel.SPRING)
+public class UserDto {
+    // ...
 }</code></pre>
+            
+            <h3>@CopyField（v1.2 新增）</h3>
+            <p>标记目标字段，指定字段级映射和转换规则。</p>
+            
+            <h4>声明</h4>
+            <pre><code>@Target(ElementType.FIELD)
+@Retention(RetentionPolicy.SOURCE)
+public @interface CopyField {
+    String[] source() default {};      // 源字段名（支持多个，用于多对一）
+    String target() default "";        // 目标字段名
+    String expression() default "";    // Java 表达式
+    String qualifiedByName() default "";  // 具名转换方法名
+    Class&lt;? extends TypeConverter&lt;?, ?&gt;&gt; converter() default TypeConverter.None.class;
+    String format() default "";        // 格式字符串
+}</code></pre>
+            
+            <h4>示例</h4>
+            <pre><code>// 多对一映射
+@CopyField(source = {"firstName", "lastName"}, 
+           expression = "source.getFirstName() + \" \" + source.getLastName()")
+private String fullName;
+
+// 使用 TypeConverter
+@CopyField(converter = NumberFormatter.class, format = "#,##0.00")
+private String priceText;
+
+// 使用具名方法
+@CopyField(qualifiedByName = "statusToName")
+private String statusText;</code></pre>
+            
+            <h2>内置 TypeConverter（v1.2）</h2>
+            
+            <h3>NumberFormatter</h3>
+            <p>将数字格式化为字符串。</p>
+            <pre><code>@CopyField(converter = NumberFormatter.class, format = "#,##0.00")
+private String priceText;  // 1234.5 -> "1,234.50"</code></pre>
+            
+            <h3>NumberParser</h3>
+            <p>将字符串解析为数字。</p>
+            <pre><code>@CopyField(converter = NumberParser.class, format = "#,##0.00")
+private BigDecimal price;  // "1,234.50" -> 1234.50</code></pre>
+            
+            <h3>DateFormatter</h3>
+            <p>将日期格式化为字符串。</p>
+            <pre><code>@CopyField(converter = DateFormatter.class, format = "yyyy-MM-dd HH:mm:ss")
+private String createTimeText;  // LocalDateTime -> "2025-12-29 10:30:00"</code></pre>
+            
+            <h3>DateParser</h3>
+            <p>将字符串解析为日期。</p>
+            <pre><code>@CopyField(converter = DateParser.class, format = "yyyy-MM-dd")
+private LocalDate createDate;  // "2025-12-29" -> LocalDate</code></pre>
+            
+            <h3>EnumStringConverter</h3>
+            <p>枚举与字符串/整数互转。</p>
+            <pre><code>@CopyField(converter = EnumStringConverter.class)
+private String statusText;  // Status.ACTIVE -> "ACTIVE"</code></pre>
+            
+            <h3>JsonConverter</h3>
+            <p>对象与 JSON 字符串互转（依赖 Jackson）。</p>
+            <pre><code>@CopyField(converter = JsonConverter.class)
+private String dataJson;  // Object -> JSON String</code></pre>
+            
+            <h2>ComponentModel 枚举（v1.2）</h2>
+            <p>定义依赖注入框架的组件模型。</p>
+            <table>
+                <thead>
+                    <tr>
+                        <th>值</th>
+                        <th>说明</th>
+                        <th>生成的注解</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><code>DEFAULT</code></td>
+                        <td>无依赖注入，使用静态方法</td>
+                        <td>无</td>
+                    </tr>
+                    <tr>
+                        <td><code>SPRING</code></td>
+                        <td>Spring 框架</td>
+                        <td><code>@Component</code></td>
+                    </tr>
+                    <tr>
+                        <td><code>CDI</code></td>
+                        <td>CDI 框架</td>
+                        <td><code>@ApplicationScoped</code></td>
+                    </tr>
+                    <tr>
+                        <td><code>JSR330</code></td>
+                        <td>JSR-330 标准</td>
+                        <td><code>@Named</code> + <code>@Singleton</code></td>
+                    </tr>
+                </tbody>
+            </table>
             
             <h2>生成的 Copier 类</h2>
             
-            <h3>方法</h3>
+            <h3>方法概览</h3>
+            <p>生成的 Copier 类包含以下方法：</p>
+            <table>
+                <thead>
+                    <tr>
+                        <th>方法</th>
+                        <th>说明</th>
+                        <th>函数式重载（v1.2）</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr><td><code>toDto(source)</code></td><td>单个对象转换</td><td>✅ <code>toDto(source, customizer)</code></td></tr>
+                    <tr><td><code>fromDto(source)</code></td><td>单个对象反向转换</td><td>✅ <code>fromDto(source, customizer)</code></td></tr>
+                    <tr><td><code>toDtoList(sources)</code></td><td>List 转换</td><td>✅ <code>toDtoList(sources, customizer)</code></td></tr>
+                    <tr><td><code>toDtoSet(sources)</code></td><td>Set 转换</td><td>✅ <code>toDtoSet(sources, customizer)</code></td></tr>
+                    <tr><td><code>fromDtoList(sources)</code></td><td>List 反向转换</td><td>✅ <code>fromDtoList(sources, customizer)</code></td></tr>
+                    <tr><td><code>fromDtoSet(sources)</code></td><td>Set 反向转换</td><td>✅ <code>fromDtoSet(sources, customizer)</code></td></tr>
+                    <tr><td><code>toDtoMap(sources)</code></td><td>Map 转换</td><td>❌</td></tr>
+                    <tr><td><code>fromDtoMap(sources)</code></td><td>Map 反向转换</td><td>❌</td></tr>
+                    <tr><td><code>toDtoArray(sources)</code></td><td>数组转换</td><td>❌</td></tr>
+                    <tr><td><code>fromDtoArray(sources)</code></td><td>数组反向转换</td><td>❌</td></tr>
+                </tbody>
+            </table>
+            <p><strong>注意</strong>：Map 和数组方法暂不支持函数式重载。</p>
+            
+            <h3>方法详情</h3>
             
             <h4>toDto(source)</h4>
             <p>将源对象转换为目标 DTO 对象。</p>
@@ -117,6 +271,16 @@ public class UserResponse {
             <p><strong>示例</strong>：</p>
             <pre><code>User user = new User(1L, "张三", "zhangsan@example.com", 25);
 UserDto userDto = UserDtoCopier.toDto(user);</code></pre>
+            
+            <h4>toDto(source, customizer)（v1.2 新增）</h4>
+            <p>将源对象转换为目标 DTO 对象，并应用自定义逻辑。</p>
+            <p><strong>签名</strong>：</p>
+            <pre><code>public static TargetType toDto(SourceType source, UnaryOperator&lt;TargetType&gt; customizer)</code></pre>
+            <p><strong>示例</strong>：</p>
+            <pre><code>UserDto dto = UserDtoCopier.toDto(user, result -> {
+    result.setDisplayName(result.getName().toUpperCase());
+    return result;
+});</code></pre>
             
             <h4>fromDto(source)</h4>
             <p>将目标 DTO 对象转换回源对象（反向拷贝）。</p>
@@ -194,6 +358,49 @@ List&lt;User&gt; users = UserDtoCopier.fromDtoList(userDtos);</code></pre>
             <ul>
                 <li>源对象集合，如果目标集合为 null，返回 null</li>
             </ul>
+            
+            <h4>fromDto(source, customizer)（v1.2 新增）</h4>
+            <p>将目标 DTO 对象转换回源对象，并应用自定义逻辑。</p>
+            <p><strong>签名</strong>：</p>
+            <pre><code>public static SourceType fromDto(TargetType source, UnaryOperator&lt;SourceType&gt; customizer)</code></pre>
+            <p><strong>示例</strong>：</p>
+            <pre><code>User user = UserDtoCopier.fromDto(userDto, result -> {
+    result.setLastSynced(Instant.now());
+    return result;
+});</code></pre>
+            
+            <h4>toDtoList(sources, customizer)（v1.2 新增）</h4>
+            <p>将源对象列表转换为目标 DTO 对象列表，并对每个元素应用自定义逻辑。</p>
+            <p><strong>签名</strong>：</p>
+            <pre><code>public static java.util.List&lt;TargetType&gt; toDtoList(
+    java.util.List&lt;SourceType&gt; sources, 
+    UnaryOperator&lt;TargetType&gt; customizer)</code></pre>
+            <p><strong>示例</strong>：</p>
+            <pre><code>List&lt;UserDto&gt; dtos = UserDtoCopier.toDtoList(users, result -> {
+    result.setTimestamp(System.currentTimeMillis());
+    return result;
+});</code></pre>
+            
+            <h4>toDtoSet(sources, customizer)（v1.2 新增）</h4>
+            <p>将源对象集合转换为目标 DTO 对象集合，并对每个元素应用自定义逻辑。</p>
+            <p><strong>签名</strong>：</p>
+            <pre><code>public static java.util.Set&lt;TargetType&gt; toDtoSet(
+    java.util.Set&lt;SourceType&gt; sources, 
+    UnaryOperator&lt;TargetType&gt; customizer)</code></pre>
+            
+            <h4>fromDtoList(sources, customizer)（v1.2 新增）</h4>
+            <p>将目标 DTO 对象列表转换回源对象列表，并对每个元素应用自定义逻辑。</p>
+            <p><strong>签名</strong>：</p>
+            <pre><code>public static java.util.List&lt;SourceType&gt; fromDtoList(
+    java.util.List&lt;TargetType&gt; sources, 
+    UnaryOperator&lt;SourceType&gt; customizer)</code></pre>
+            
+            <h4>fromDtoSet(sources, customizer)（v1.2 新增）</h4>
+            <p>将目标 DTO 对象集合转换回源对象集合，并对每个元素应用自定义逻辑。</p>
+            <p><strong>签名</strong>：</p>
+            <pre><code>public static java.util.Set&lt;SourceType&gt; fromDtoSet(
+    java.util.Set&lt;TargetType&gt; sources, 
+    UnaryOperator&lt;SourceType&gt; customizer)</code></pre>
             
             <h4>toDtoMap(sources)</h4>
             <p>将源对象 Map 转换为目标 DTO Map（保留 Key，拷贝 Value）。</p>

@@ -15,7 +15,7 @@
                 <h1>🚀 Fast Bean Copier</h1>
             </div>
             <p>高性能的 Java Bean 拷贝工具</p>
-            <div class="version-badge">最新版本 1.2.1</div>
+            <div class="version-badge">最新版本 1.3.0</div>
         </div>
     </header>
     
@@ -38,7 +38,7 @@
             <p>Fast Bean Copier 是一个基于注解处理器的 Java Bean 拷贝工具，用于生成类型安全、高性能且零依赖的 Bean 映射代码。</p>
             
             <div class="highlight-box">
-                <p><strong>v1.2.1 更新：</strong>Bug 修复、稳定性改进。v1.2 特性：多字段映射（多对一、一对多）、6 种内置 TypeConverter 类型转换器、表达式映射、依赖注入支持（Spring/CDI/JSR330）、函数式定制拷贝。</p>
+                <p><strong>v1.3.0 更新：</strong>更新现有对象（updateDto/updateEntity）、映射前回调（beforeMapping）、条件映射（condition）、默认值和常量（defaultValue/constant）、全局配置（@CopyTargetConfig）、Null 值处理策略（NullValueStrategy）。</p>
             </div>
             
             <h2>✨ 核心特性</h2>
@@ -80,6 +80,26 @@
                     <p>UnaryOperator 重载，拷贝后立即执行自定义逻辑</p>
                 </div>
                 <div class="feature-card">
+                    <h3>� 更新现档有对象</h3>
+                    <p>updateDto/updateEntity 方法，更新已存在的对象而非创建新对象（v1.3 新增）</p>
+                </div>
+                <div class="feature-card">
+                    <h3>⚙️ 映射前回调</h3>
+                    <p>beforeMapping 属性，在映射前执行验证、初始化等操作（v1.3 新增）</p>
+                </div>
+                <div class="feature-card">
+                    <h3>🎯 条件映射</h3>
+                    <p>condition 属性，根据条件决定是否执行字段映射（v1.3 新增）</p>
+                </div>
+                <div class="feature-card">
+                    <h3>📋 默认值和常量</h3>
+                    <p>defaultValue/constant 属性，设置默认值或常量值（v1.3 新增）</p>
+                </div>
+                <div class="feature-card">
+                    <h3>🌐 全局配置</h3>
+                    <p>@CopyTargetConfig 包级别配置，统一管理组件模型和 Null 值策略（v1.3 新增）</p>
+                </div>
+                <div class="feature-card">
                     <h3>📚 完整文档</h3>
                     <p>参考文档、快速入门、API 文档、常见问题解答</p>
                 </div>
@@ -92,13 +112,13 @@
             <pre><code>&lt;dependency&gt;
     &lt;groupId&gt;com.github.jackieonway&lt;/groupId&gt;
     &lt;artifactId&gt;fast-bean-copier-annotations&lt;/artifactId&gt;
-    &lt;version&gt;1.2.1&lt;/version&gt;
+    &lt;version&gt;1.3.0&lt;/version&gt;
 &lt;/dependency&gt;
 
 &lt;dependency&gt;
     &lt;groupId&gt;com.github.jackieonway&lt;/groupId&gt;
     &lt;artifactId&gt;fast-bean-copier-processor&lt;/artifactId&gt;
-    &lt;version&gt;1.2.1&lt;/version&gt;
+    &lt;version&gt;1.3.0&lt;/version&gt;
     &lt;scope&gt;provided&lt;/scope&gt;
 &lt;/dependency&gt;</code></pre>
             
@@ -143,10 +163,16 @@ UserDto userDto = UserDtoCopier.toDto(user);</code></pre>
                     </thead>
                     <tbody>
                         <tr>
-                            <td><strong>1.2.1</strong></td>
+                            <td><strong>1.3.0</strong></td>
+                            <td>2026-01-14</td>
+                            <td>更新现有对象、映射前回调、条件映射、默认值和常量、全局配置</td>
+                            <td><span class="current-version">当前版本</span></td>
+                        </tr>
+                        <tr>
+                            <td><a href="v1.2.1/index.html">1.2.1</a></td>
                             <td>2026-01-08</td>
                             <td>Bug 修复、稳定性改进</td>
-                            <td><span class="current-version">当前版本</span></td>
+                            <td><a href="v1.2.1/index.html">查看文档</a></td>
                         </tr>
                         <tr>
                             <td><a href="v1.2.0/index.html">1.2.0</a></td>

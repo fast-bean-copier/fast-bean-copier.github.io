@@ -4,18 +4,18 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>快速入门 - Fast Bean Copier</title>
-    <link rel="icon" type="image/png" href="favicon.png">
-    <link rel="stylesheet" href="styles.css">
+    <link rel="icon" type="image/png" href="../favicon.png">
+    <link rel="stylesheet" href="../styles.css">
 </head>
 <body>
     <header>
         <div class="container">
             <div class="logo-container">
-                <img src="logo.png" alt="Fast Bean Copier Logo" class="logo">
+                <img src="../logo.png" alt="Fast Bean Copier Logo" class="logo">
                 <h1>🚀 Fast Bean Copier</h1>
             </div>
             <p>高性能的 Java Bean 拷贝工具</p>
-            <div class="version-badge">最新版本 1.3.0</div>
+            <div class="version-badge">版本 1.2.1</div>
         </div>
     </header>
     
@@ -36,7 +36,7 @@
             <h1>Fast Bean Copier 快速入门指南</h1>
             
             <div class="highlight-box">
-                <p><strong>v1.3 新特性：</strong>更新现有对象（updateDto/updateEntity）、映射前回调（beforeMapping）、条件映射（condition）、默认值和常量（defaultValue/constant）、全局配置（@CopyTargetConfig）、Null 值处理策略（NullValueStrategy）。</p>
+                <p><strong>v1.2 新特性：</strong>多字段映射（多对一、一对多）、TypeConverter 类型转换器、依赖注入支持（Spring/CDI/JSR330）、函数式定制拷贝。</p>
             </div>
             
             <h2>5 分钟快速开始</h2>
@@ -46,13 +46,13 @@
             <pre><code>&lt;dependency&gt;
     &lt;groupId&gt;com.github.jackieonway&lt;/groupId&gt;
     &lt;artifactId&gt;fast-bean-copier-annotations&lt;/artifactId&gt;
-    &lt;version&gt;1.3.0&lt;/version&gt;
+    &lt;version&gt;1.2.1&lt;/version&gt;
 &lt;/dependency&gt;
 
 &lt;dependency&gt;
     &lt;groupId&gt;com.github.jackieonway&lt;/groupId&gt;
     &lt;artifactId&gt;fast-bean-copier-processor&lt;/artifactId&gt;
-    &lt;version&gt;1.3.0&lt;/version&gt;
+    &lt;version&gt;1.2.1&lt;/version&gt;
     &lt;scope&gt;provided&lt;/scope&gt;
 &lt;/dependency&gt;</code></pre>
             
@@ -267,84 +267,6 @@ Set&lt;UserDto&gt; dtoSet = UserDtoCopier.toDtoSet(userSet, result -> {
 });</code></pre>
             <p><strong>注意</strong>：Map 和数组方法（<code>toDtoMap</code>、<code>toDtoArray</code> 等）暂不支持函数式重载。</p>
             
-            <h2>v1.3 新功能</h2>
-            
-            <h3>更新现有对象</h3>
-            <pre><code>// 更新已存在的 DTO 对象
-UserDto existingDto = new UserDto();
-existingDto.setName("原始名称");
-UserDtoCopier.updateDto(existingDto, user);
-// existingDto 的字段被更新为 user 的值
-
-// 反向更新实体对象
-User existingUser = new User();
-UserDtoCopier.updateEntity(existingUser, userDto);</code></pre>
-            
-            <h3>映射前回调</h3>
-            <pre><code>@CopyTarget(source = User.class, beforeMapping = "validateAndPrepare")
-public class UserDto {
-    private Long id;
-    private String name;
-    
-    // 映射前回调方法（必须是 default 方法）
-    default void validateAndPrepare(User source) {
-        if (source.getName() == null) {
-            throw new IllegalArgumentException("Name cannot be null");
-        }
-    }
-}</code></pre>
-            
-            <h3>条件映射</h3>
-            <pre><code>@CopyTarget(source = User.class)
-public class UserDto {
-    // 只有当源字段不为 null 时才执行映射
-    @CopyField(condition = "java(source.getName() != null)")
-    private String name;
-    
-    // 复杂条件
-    @CopyField(condition = "java(source.getAge() != null && source.getAge() > 0)")
-    private Integer age;
-}</code></pre>
-            
-            <h3>默认值</h3>
-            <pre><code>@CopyTarget(source = User.class)
-public class UserDto {
-    // 当源字段为 null 时使用默认值
-    @CopyField(defaultValue = "未知")
-    private String name;
-    
-    @CopyField(defaultValue = "0")
-    private Integer age;
-}</code></pre>
-            
-            <h3>常量值</h3>
-            <pre><code>@CopyTarget(source = User.class)
-public class UserDto {
-    // 直接设置常量值，不依赖源字段
-    @CopyField(constant = "SYSTEM")
-    private String createdBy;
-    
-    @CopyField(constant = "1.3.0")
-    private String version;
-}</code></pre>
-            
-            <h3>全局配置</h3>
-            <pre><code>// package-info.java
-@CopyTargetConfig(
-    componentModel = ComponentModel.SPRING,
-    nullValueStrategy = NullValueStrategy.IGNORE
-)
-package com.example.dto;
-
-import com.github.jackieonway.copier.annotation.*;</code></pre>
-            
-            <h3>Null 值处理策略</h3>
-            <pre><code>// IGNORE：忽略 null 值，不更新目标字段（默认）
-// REPLACE：替换 null 值，将目标字段设置为 null
-
-@CopyTargetConfig(nullValueStrategy = NullValueStrategy.REPLACE)
-package com.example.dto;</code></pre>
-            
             <h2>故障排除</h2>
             
             <h3>问题：生成的 Copier 类未出现</h3>
@@ -394,7 +316,7 @@ package com.example.dto;</code></pre>
         <p>采用 Apache License 2.0 许可证</p>
     </footer>
     
-    <script src="script.js"></script>
+    <script src="../script.js"></script>
 </body>
 </html>
 

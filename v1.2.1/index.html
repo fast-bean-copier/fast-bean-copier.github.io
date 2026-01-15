@@ -3,19 +3,19 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Fast Bean Copier 1.0.0 文档</title>
-    <link rel="icon" type="image/png" href="favicon.png">
-    <link rel="stylesheet" href="styles.css">
+    <title>Fast Bean Copier 文档</title>
+    <link rel="icon" type="image/png" href="../favicon.png">
+    <link rel="stylesheet" href="../styles.css">
 </head>
 <body>
     <header>
         <div class="container">
             <div class="logo-container">
-                <img src="logo.png" alt="Fast Bean Copier Logo" class="logo">
+                <img src="../logo.png" alt="Fast Bean Copier Logo" class="logo">
                 <h1>🚀 Fast Bean Copier</h1>
             </div>
             <p>高性能的 Java Bean 拷贝工具</p>
-            <div class="version-badge">版本 1.0.0</div>
+            <div class="version-badge">版本 1.2.1</div>
         </div>
     </header>
     
@@ -37,6 +37,10 @@
             
             <p>Fast Bean Copier 是一个基于注解处理器的 Java Bean 拷贝工具，用于生成类型安全、高性能且零依赖的 Bean 映射代码。</p>
             
+            <div class="highlight-box">
+                <p><strong>v1.2.1 更新：</strong>Bug 修复、稳定性改进。v1.2 特性：多字段映射（多对一、一对多）、6 种内置 TypeConverter 类型转换器、表达式映射、依赖注入支持（Spring/CDI/JSR330）、函数式定制拷贝。</p>
+            </div>
+            
             <h2>✨ 核心特性</h2>
             <div class="feature-grid">
                 <div class="feature-card">
@@ -56,8 +60,24 @@
                     <p>只需一个 @CopyTarget 注解，自动生成所有拷贝方法</p>
                 </div>
                 <div class="feature-card">
-                    <h3>🔄 完整功能</h3>
-                    <p>支持字段忽略、类型转换、集合处理、双向拷贝</p>
+                    <h3>🔄 多字段映射</h3>
+                    <p>支持多对一、一对多转换，灵活的字段合并与拆分</p>
+                </div>
+                <div class="feature-card">
+                    <h3>� 类型文转换器</h3>
+                    <p>6 种内置 TypeConverter，支持数字/日期格式化、枚举转换、JSON 序列化</p>
+                </div>
+                <div class="feature-card">
+                    <h3>💉 依赖注入</h3>
+                    <p>支持 Spring、CDI、JSR-330 框架集成，构造器注入</p>
+                </div>
+                <div class="feature-card">
+                    <h3>📝 表达式映射</h3>
+                    <p>支持 Java 表达式进行复杂字段转换</p>
+                </div>
+                <div class="feature-card">
+                    <h3>🎨 函数式定制</h3>
+                    <p>UnaryOperator 重载，拷贝后立即执行自定义逻辑</p>
                 </div>
                 <div class="feature-card">
                     <h3>📚 完整文档</h3>
@@ -72,13 +92,13 @@
             <pre><code>&lt;dependency&gt;
     &lt;groupId&gt;com.github.jackieonway&lt;/groupId&gt;
     &lt;artifactId&gt;fast-bean-copier-annotations&lt;/artifactId&gt;
-    &lt;version&gt;1.0.0&lt;/version&gt;
+    &lt;version&gt;1.2.1&lt;/version&gt;
 &lt;/dependency&gt;
 
 &lt;dependency&gt;
     &lt;groupId&gt;com.github.jackieonway&lt;/groupId&gt;
     &lt;artifactId&gt;fast-bean-copier-processor&lt;/artifactId&gt;
-    &lt;version&gt;1.0.0&lt;/version&gt;
+    &lt;version&gt;1.2.1&lt;/version&gt;
     &lt;scope&gt;provided&lt;/scope&gt;
 &lt;/dependency&gt;</code></pre>
             
@@ -109,6 +129,7 @@ UserDto userDto = UserDtoCopier.toDto(user);</code></pre>
                     <li><a href="changelog.html">更新日志</a> - 版本变更记录</li>
                 </ul>
             </div>
+            
             <h2>📦 版本历史</h2>
             <div class="version-history-box">
                 <table class="version-table">
@@ -128,10 +149,10 @@ UserDto userDto = UserDtoCopier.toDto(user);</code></pre>
                             <td><a href="../index.html">查看文档</a></td>
                         </tr>
                         <tr>
-                            <td><a href="../v1.2.1/index.html">1.2.1</a></td>
+                            <td><strong>1.2.1</strong></td>
                             <td>2026-01-08</td>
                             <td>Bug 修复、稳定性改进</td>
-                            <td><a href="../v1.2.1/index.html">查看文档</a></td>
+                            <td>当前文档</td>
                         </tr>
                         <tr>
                             <td><a href="../v1.2.0/index.html">1.2.0</a></td>
@@ -146,10 +167,10 @@ UserDto userDto = UserDtoCopier.toDto(user);</code></pre>
                             <td><a href="../v1.1.0/index.html">查看文档</a></td>
                         </tr>
                         <tr>
-                            <td><strong>1.0.0</strong></td>
+                            <td><a href="../v1.0.0/index.html">1.0.0</a></td>
                             <td>2025-12-13</td>
                             <td>初始版本、基础拷贝功能</td>
-                            <td>当前文档</td>
+                            <td><a href="../v1.0.0/index.html">查看文档</a></td>
                         </tr>
                     </tbody>
                 </table>
@@ -158,10 +179,11 @@ UserDto userDto = UserDtoCopier.toDto(user);</code></pre>
     </div>
     
     <footer>
-        <p>&copy; 2025 Fast Bean Copier. All rights reserved.</p>
+        <p>&copy; 2026 Fast Bean Copier. All rights reserved.</p>
         <p>采用 Apache License 2.0 许可证</p>
     </footer>
     
-    <script src="script.js"></script>
+    <script src="../script.js"></script>
 </body>
 </html>
+

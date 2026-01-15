@@ -4,18 +4,18 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>参考文档 - Fast Bean Copier</title>
-    <link rel="icon" type="image/png" href="favicon.png">
-    <link rel="stylesheet" href="styles.css">
+    <link rel="icon" type="image/png" href="../favicon.png">
+    <link rel="stylesheet" href="../styles.css">
 </head>
 <body>
     <header>
         <div class="container">
             <div class="logo-container">
-                <img src="logo.png" alt="Fast Bean Copier Logo" class="logo">
+                <img src="../logo.png" alt="Fast Bean Copier Logo" class="logo">
                 <h1>🚀 Fast Bean Copier</h1>
             </div>
             <p>高性能的 Java Bean 拷贝工具</p>
-            <div class="version-badge">最新版本 1.3.0</div>
+            <div class="version-badge">版本 1.2.1</div>
         </div>
     </header>
     
@@ -33,7 +33,7 @@
     
     <div class="container">
         <div class="content">
-            <h1>Fast Bean Copier 1.3.0 参考文档</h1>
+            <h1>Fast Bean Copier 1.2.1 参考文档</h1>
             
             <h2>前言</h2>
             <p>本文档是 Fast Bean Copier 的参考文档，Fast Bean Copier 是一个基于注解处理器的 Java Bean 拷贝工具，用于生成类型安全、高性能且零依赖的 Bean 映射代码。</p>
@@ -72,13 +72,13 @@
             <pre><code>&lt;dependency&gt;
     &lt;groupId&gt;com.github.jackieonway&lt;/groupId&gt;
     &lt;artifactId&gt;fast-bean-copier-annotations&lt;/artifactId&gt;
-    &lt;version&gt;1.3.0&lt;/version&gt;
+    &lt;version&gt;1.2.1&lt;/version&gt;
 &lt;/dependency&gt;
 
 &lt;dependency&gt;
     &lt;groupId&gt;com.github.jackieonway&lt;/groupId&gt;
     &lt;artifactId&gt;fast-bean-copier-processor&lt;/artifactId&gt;
-    &lt;version&gt;1.3.0&lt;/version&gt;
+    &lt;version&gt;1.2.1&lt;/version&gt;
     &lt;scope&gt;provided&lt;/scope&gt;
 &lt;/dependency&gt;</code></pre>
             <p>注意：处理器依赖应该使用 <code>provided</code> 作用域，因为它只在编译时需要。</p>
@@ -86,8 +86,8 @@
             <h3>2.2. Gradle</h3>
             <p>要在 Gradle 项目中使用 Fast Bean Copier，请在您的 <code>build.gradle</code> 中添加以下依赖：</p>
             <pre><code>dependencies {
-    implementation 'com.github.jackieonway:fast-bean-copier-annotations:1.3.0'
-    annotationProcessor 'com.github.jackieonway:fast-bean-copier-processor:1.3.0'
+    implementation 'com.github.jackieonway:fast-bean-copier-annotations:1.2.1'
+    annotationProcessor 'com.github.jackieonway:fast-bean-copier-processor:1.2.1'
 }</code></pre>
             
             <h3>2.3. Java 版本要求</h3>
@@ -463,340 +463,15 @@ public class PersonDto {
     private String statusText;
 }</code></pre>
             
-            <h2>12. 更新现有对象（v1.3）</h2>
-            <p>v1.3 新增 <code>updateDto</code> 和 <code>updateEntity</code> 方法，用于更新已存在的对象，而不是创建新对象。</p>
+            <h2>7. Null 值处理</h2>
             
-            <h3>12.1. updateDto 方法</h3>
-            <p>更新已存在的目标 DTO 对象：</p>
-            <pre><code>// 创建已存在的 DTO 对象
-UserDto existingDto = new UserDto();
-existingDto.setName("原始名称");
-existingDto.setEmail("old@example.com");
-
-// 使用源对象更新 DTO
-User user = new User(1L, "新名称", "new@example.com", 25);
-UserDtoCopier.updateDto(existingDto, user);
-
-// existingDto 的字段被更新为 user 的值
-// existingDto.getName() -> "新名称"
-// existingDto.getEmail() -> "new@example.com"</code></pre>
-            
-            <h3>12.2. updateEntity 方法</h3>
-            <p>更新已存在的实体对象（反向更新）：</p>
-            <pre><code>// 创建已存在的实体对象
-User existingUser = new User();
-existingUser.setName("原始名称");
-
-// 使用 DTO 更新实体
-UserDto userDto = new UserDto(1L, "新名称", "new@example.com", 25);
-UserDtoCopier.updateEntity(existingUser, userDto);
-
-// existingUser 的字段被更新为 userDto 的值</code></pre>
-            
-            <h3>12.3. 嵌套对象更新</h3>
-            <p>支持嵌套对象的递归更新：</p>
-            <pre><code>@CopyTarget(source = Order.class)
-public class OrderDto {
-    private Long id;
-    private AddressDto address;  // 嵌套对象
-}
-
-// 更新时，嵌套对象也会被递归更新
-OrderDto existingDto = new OrderDto();
-existingDto.setAddress(new AddressDto());  // 已存在的嵌套对象
-
-Order order = new Order();
-order.setAddress(new Address("北京", "朝阳区"));
-
-OrderDtoCopier.updateDto(existingDto, order);
-// existingDto.address 的字段被更新，而不是替换整个对象</code></pre>
-            
-            <h3>12.4. Null 值处理</h3>
-            <p>源对象为 null 时，不修改目标对象：</p>
-            <pre><code>UserDto existingDto = new UserDto();
-existingDto.setName("原始名称");
-
-UserDtoCopier.updateDto(existingDto, null);
-// existingDto 保持不变，name 仍为 "原始名称"</code></pre>
-            
-            <h2>13. 映射前回调（v1.3）</h2>
-            <p>v1.3 新增 <code>beforeMapping</code> 属性，用于在映射逻辑执行之前调用指定的回调方法。</p>
-            
-            <h3>13.1. 基本用法</h3>
-            <pre><code>@CopyTarget(source = User.class, beforeMapping = "validateAndPrepare")
-public class UserDto {
-    private Long id;
-    private String name;
-    
-    // 映射前回调方法（必须是 default 方法）
-    default void validateAndPrepare(User source) {
-        if (source.getName() == null) {
-            throw new IllegalArgumentException("Name cannot be null");
-        }
-        // 可以进行验证、初始化、日志记录等操作
-    }
-}</code></pre>
-            
-            <h3>13.2. 方法签名要求</h3>
-            <ul>
-                <li>必须是目标类中的 <code>default</code> 方法</li>
-                <li>参数类型为源类类型</li>
-                <li>返回类型为 <code>void</code></li>
-            </ul>
-            
-            <h3>13.3. 使用场景</h3>
-            <ul>
-                <li><strong>验证</strong>：在映射前验证源对象的有效性</li>
-                <li><strong>初始化</strong>：准备映射所需的资源或状态</li>
-                <li><strong>日志记录</strong>：记录映射操作的开始</li>
-                <li><strong>审计</strong>：记录数据转换的审计信息</li>
-            </ul>
-            
-            <h2>14. 条件映射（v1.3）</h2>
-            <p>v1.3 新增 <code>condition</code> 属性，用于指定条件表达式，决定是否执行字段映射。</p>
-            
-            <h3>14.1. 基本用法</h3>
-            <pre><code>@CopyTarget(source = User.class)
-public class UserDto {
-    // 只有当源字段不为 null 时才映射
-    @CopyField(condition = "java(source.getName() != null)")
-    private String name;
-    
-    // 只有当年龄大于 0 时才映射
-    @CopyField(condition = "java(source.getAge() != null && source.getAge() > 0)")
-    private Integer age;
-}</code></pre>
-            
-            <h3>14.2. 表达式格式</h3>
-            <p>条件表达式使用 <code>java(...)</code> 格式包裹 Java 表达式：</p>
-            <pre><code>// 简单 null 检查
-@CopyField(condition = "java(source.getEmail() != null)")
-private String email;
-
-// 复杂条件
-@CopyField(condition = "java(source.getStatus() != null && source.getStatus().isActive())")
-private String statusText;
-
-// 字符串非空检查
-@CopyField(condition = "java(source.getPhone() != null && !source.getPhone().isEmpty())")
-private String phone;</code></pre>
-            
-            <h3>14.3. 与其他属性组合</h3>
-            <p>条件映射可以与 <code>expression</code>、<code>converter</code> 等属性组合使用：</p>
-            <pre><code>@CopyField(
-    condition = "java(source.getPrice() != null)",
-    converter = NumberFormatter.class, 
-    format = "#,##0.00"
-)
-private String priceText;</code></pre>
-            
-            <h2>15. 默认值和常量（v1.3）</h2>
-            <p>v1.3 新增 <code>defaultValue</code> 和 <code>constant</code> 属性，用于设置默认值和常量值。</p>
-            
-            <h3>15.1. 默认值（defaultValue）</h3>
-            <p>当源字段为 null 时使用默认值：</p>
-            <pre><code>@CopyTarget(source = User.class)
-public class UserDto {
-    // 当 source.name 为 null 时，使用 "未知" 作为默认值
-    @CopyField(defaultValue = "未知")
-    private String name;
-    
-    // 数字类型默认值
-    @CopyField(defaultValue = "0")
-    private Integer age;
-    
-    // 布尔类型默认值
-    @CopyField(defaultValue = "false")
-    private Boolean active;
-}</code></pre>
-            
-            <h3>15.2. 支持的默认值类型</h3>
-            <table>
-                <thead>
-                    <tr>
-                        <th>目标类型</th>
-                        <th>默认值示例</th>
-                        <th>说明</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr><td><code>String</code></td><td><code>"默认文本"</code></td><td>直接使用字符串</td></tr>
-                    <tr><td><code>Integer</code></td><td><code>"0"</code></td><td>自动解析为整数</td></tr>
-                    <tr><td><code>Long</code></td><td><code>"0"</code></td><td>自动解析为长整数</td></tr>
-                    <tr><td><code>Double</code></td><td><code>"0.0"</code></td><td>自动解析为双精度浮点数</td></tr>
-                    <tr><td><code>Float</code></td><td><code>"0.0"</code></td><td>自动解析为单精度浮点数</td></tr>
-                    <tr><td><code>Boolean</code></td><td><code>"true"</code> / <code>"false"</code></td><td>自动解析为布尔值</td></tr>
-                    <tr><td><code>BigDecimal</code></td><td><code>"0.00"</code></td><td>自动解析为 BigDecimal</td></tr>
-                    <tr><td><code>BigInteger</code></td><td><code>"0"</code></td><td>自动解析为 BigInteger</td></tr>
-                </tbody>
-            </table>
-            
-            <h3>15.3. 常量值（constant）</h3>
-            <p>直接设置常量值，不依赖源字段：</p>
-            <pre><code>@CopyTarget(source = User.class)
-public class UserDto {
-    // 始终设置为 "SYSTEM"，不管源字段的值
-    @CopyField(constant = "SYSTEM")
-    private String createdBy;
-    
-    // 始终设置为 "1.0"
-    @CopyField(constant = "1.0")
-    private String version;
-}</code></pre>
-            
-            <h3>15.4. defaultValue 与 constant 的区别</h3>
-            <table>
-                <thead>
-                    <tr>
-                        <th>属性</th>
-                        <th>行为</th>
-                        <th>使用场景</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <td><code>defaultValue</code></td>
-                        <td>仅当源字段为 null 时使用</td>
-                        <td>提供备用值，源字段有值时使用源值</td>
-                    </tr>
-                    <tr>
-                        <td><code>constant</code></td>
-                        <td>始终使用，忽略源字段</td>
-                        <td>固定值，如系统标识、版本号等</td>
-                    </tr>
-                </tbody>
-            </table>
-            
-            <h2>16. 全局配置（v1.3）</h2>
-            <p>v1.3 新增 <code>@CopyTargetConfig</code> 注解，用于在包级别配置默认行为。</p>
-            
-            <h3>16.1. 基本用法</h3>
-            <p>在 <code>package-info.java</code> 文件中使用：</p>
-            <pre><code>// package-info.java
-@CopyTargetConfig(
-    componentModel = ComponentModel.SPRING,
-    nullValueStrategy = NullValueStrategy.IGNORE
-)
-package com.example.dto;
-
-import com.github.jackieonway.copier.annotation.*;</code></pre>
-            
-            <h3>16.2. 配置属性</h3>
-            <table>
-                <thead>
-                    <tr>
-                        <th>属性</th>
-                        <th>类型</th>
-                        <th>默认值</th>
-                        <th>说明</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <td><code>componentModel</code></td>
-                        <td><code>ComponentModel</code></td>
-                        <td><code>DEFAULT</code></td>
-                        <td>默认组件模型</td>
-                    </tr>
-                    <tr>
-                        <td><code>nullValueStrategy</code></td>
-                        <td><code>NullValueStrategy</code></td>
-                        <td><code>IGNORE</code></td>
-                        <td>默认 null 值处理策略</td>
-                    </tr>
-                </tbody>
-            </table>
-            
-            <h3>16.3. 配置优先级</h3>
-            <p>配置优先级从高到低：</p>
-            <ol>
-                <li><strong>类级别</strong>：<code>@CopyTarget</code> 注解中的配置</li>
-                <li><strong>包级别</strong>：<code>@CopyTargetConfig</code> 注解中的配置</li>
-                <li><strong>默认值</strong>：框架默认配置</li>
-            </ol>
-            <pre><code>// 包级别配置 Spring
-@CopyTargetConfig(componentModel = ComponentModel.SPRING)
-package com.example.dto;
-
-// 类级别覆盖为 CDI
-@CopyTarget(source = User.class, componentModel = ComponentModel.CDI)
-public class UserDto { }  // 使用 CDI
-
-// 类级别未指定，使用包级别配置
-@CopyTarget(source = Order.class)
-public class OrderDto { }  // 使用 SPRING</code></pre>
-            
-            <h2>17. Null 值处理策略（v1.3）</h2>
-            <p>v1.3 新增 <code>NullValueStrategy</code> 枚举，用于控制 null 值的处理方式。</p>
-            
-            <h3>17.1. 策略说明</h3>
-            <table>
-                <thead>
-                    <tr>
-                        <th>策略</th>
-                        <th>行为</th>
-                        <th>使用场景</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <td><code>IGNORE</code></td>
-                        <td>忽略 null 值，不更新目标字段</td>
-                        <td>部分更新，保留目标对象的原有值</td>
-                    </tr>
-                    <tr>
-                        <td><code>REPLACE</code></td>
-                        <td>替换 null 值，将目标字段设置为 null</td>
-                        <td>完全覆盖，源对象的 null 值也要同步</td>
-                    </tr>
-                </tbody>
-            </table>
-            
-            <h3>17.2. 使用示例</h3>
-            <pre><code>// 包级别配置
-@CopyTargetConfig(nullValueStrategy = NullValueStrategy.IGNORE)
-package com.example.dto;
-
-// 使用 IGNORE 策略
-UserDto existingDto = new UserDto();
-existingDto.setName("原始名称");
-existingDto.setEmail("old@example.com");
-
-User user = new User();
-user.setName("新名称");
-user.setEmail(null);  // email 为 null
-
-UserDtoCopier.updateDto(existingDto, user);
-// existingDto.name -> "新名称"（被更新）
-// existingDto.email -> "old@example.com"（保持不变，因为源值为 null）</code></pre>
-            
-            <h3>17.3. REPLACE 策略示例</h3>
-            <pre><code>// 包级别配置
-@CopyTargetConfig(nullValueStrategy = NullValueStrategy.REPLACE)
-package com.example.dto;
-
-// 使用 REPLACE 策略
-UserDto existingDto = new UserDto();
-existingDto.setName("原始名称");
-existingDto.setEmail("old@example.com");
-
-User user = new User();
-user.setName("新名称");
-user.setEmail(null);  // email 为 null
-
-UserDtoCopier.updateDto(existingDto, user);
-// existingDto.name -> "新名称"（被更新）
-// existingDto.email -> null（被设置为 null）</code></pre>
-            
-            <h2>18. Null 值处理</h2>
-            
-            <h3>18.1. 对象级别的 null 处理</h3>
+            <h3>7.1. 对象级别的 null 处理</h3>
             <p>所有映射方法都支持 null 值处理：</p>
             <pre><code>// 传入 null 返回 null
 UserDto dto = UserDtoCopier.toDto(null);  // 返回 null
 User user = UserDtoCopier.fromDto(null);  // 返回 null</code></pre>
             
-            <h3>18.2. 字段级别的 null 处理</h3>
+            <h3>7.2. 字段级别的 null 处理</h3>
             <p>在字段映射时，null 值会被保留：</p>
             <pre><code>User user = new User();
 user.setId(1L);
@@ -805,9 +480,9 @@ user.setName(null);  // name 为 null
 UserDto dto = UserDtoCopier.toDto(user);
 // dto.name 也为 null</code></pre>
             
-            <h2>19. 生成的代码示例</h2>
+            <h2>8. 生成的代码示例</h2>
             
-            <h3>19.1. 基本 Copier 类</h3>
+            <h3>8.1. 基本 Copier 类</h3>
             <p>编译后自动生成的 <code>UserDtoCopier</code> 类示例：</p>
             <pre><code>public final class UserDtoCopier {
     private UserDtoCopier() {
@@ -837,9 +512,9 @@ UserDto dto = UserDtoCopier.toDto(user);
     // ... 其他方法
 }</code></pre>
             
-            <h2>20. 常见用例</h2>
+            <h2>9. 常见用例</h2>
             
-            <h3>20.1. API 响应 DTO</h3>
+            <h3>9.1. API 响应 DTO</h3>
             <pre><code>// 数据库实体
 public class User {
     private Long id;
@@ -862,7 +537,7 @@ public class UserResponse {
 User user = userRepository.findById(1L);
 UserResponse response = UserResponseCopier.toDto(user);</code></pre>
             
-            <h3>20.2. 批量转换</h3>
+            <h3>9.2. 批量转换</h3>
             <pre><code>// 从数据库查询用户列表
 List&lt;User&gt; users = userRepository.findAll();
 
@@ -872,7 +547,7 @@ List&lt;UserDto&gt; userDtos = UserDtoCopier.toDtoList(users);
 // 返回给客户端
 return ResponseEntity.ok(userDtos);</code></pre>
             
-            <h3>20.3. 双向转换</h3>
+            <h3>9.3. 双向转换</h3>
             <pre><code>// 从客户端接收 DTO
 UserDto userDto = request.getBody();
 
@@ -886,9 +561,9 @@ userRepository.save(user);
 UserDto response = UserDtoCopier.toDto(user);
 return ResponseEntity.ok(response);</code></pre>
             
-            <h2>21. 故障排除</h2>
+            <h2>10. 故障排除</h2>
             
-            <h3>21.1. 生成的代码未出现</h3>
+            <h3>10.1. 生成的代码未出现</h3>
             <p><strong>问题</strong>：编译后在 <code>target/generated-sources/annotations/</code> 中找不到生成的 Copier 类。</p>
             <p><strong>解决方案</strong>：</p>
             <ol>
@@ -897,7 +572,7 @@ return ResponseEntity.ok(response);</code></pre>
                 <li>运行 <code>mvn clean compile</code> 进行完整编译</li>
             </ol>
             
-            <h3>21.2. 字段未被拷贝</h3>
+            <h3>10.2. 字段未被拷贝</h3>
             <p><strong>问题</strong>：某些字段在拷贝后为 null。</p>
             <p><strong>解决方案</strong>：</p>
             <ol>
@@ -906,7 +581,7 @@ return ResponseEntity.ok(response);</code></pre>
                 <li>检查该字段是否在 <code>ignore</code> 属性中</li>
             </ol>
             
-            <h3>21.3. 类型转换错误</h3>
+            <h3>10.3. 类型转换错误</h3>
             <p><strong>问题</strong>：编译时出现类型不兼容的错误。</p>
             <p><strong>解决方案</strong>：</p>
             <ol>
@@ -914,9 +589,9 @@ return ResponseEntity.ok(response);</code></pre>
                 <li>对于不兼容的类型，在应用层手动处理</li>
             </ol>
             
-            <h2>22. 性能考虑</h2>
+            <h2>11. 性能考虑</h2>
             
-            <h3>22.1. 编译期代码生成</h3>
+            <h3>11.1. 编译期代码生成</h3>
             <p>Fast Bean Copier 在编译期生成代码，因此：</p>
             <ul>
                 <li>运行时性能与手写代码相同</li>
@@ -925,12 +600,12 @@ return ResponseEntity.ok(response);</code></pre>
                 <li>直接调用 getter/setter</li>
             </ul>
             
-            <h3>22.2. 内存使用</h3>
+            <h3>11.2. 内存使用</h3>
             <p>生成的 Copier 类是无状态的，可以安全地在多线程环境中使用。</p>
             
-            <h2>23. 最佳实践</h2>
+            <h2>12. 最佳实践</h2>
             
-            <h3>23.1. 为每个 DTO 定义一个 @CopyTarget</h3>
+            <h3>12.1. 为每个 DTO 定义一个 @CopyTarget</h3>
             <pre><code>// ✅ 推荐
 @CopyTarget(source = User.class)
 public class UserDto { }
@@ -941,7 +616,7 @@ public class UserResponse { }
 // ❌ 不推荐
 // 不要尝试在一个类中处理多个源类</code></pre>
             
-            <h3>23.2. 使用 ignore 属性排除敏感字段</h3>
+            <h3>12.2. 使用 ignore 属性排除敏感字段</h3>
             <pre><code>// ✅ 推荐
 @CopyTarget(source = User.class, ignore = {"password", "secretKey"})
 public class UserDto { }
@@ -949,7 +624,7 @@ public class UserDto { }
 // ❌ 不推荐
 // 不要在 DTO 中包含敏感字段</code></pre>
             
-            <h3>23.3. 保持源类和 DTO 的字段一致</h3>
+            <h3>12.3. 保持源类和 DTO 的字段一致</h3>
             <pre><code>// ✅ 推荐
 public class User {
     private Long id;
@@ -967,7 +642,7 @@ public class UserDto {
 // ❌ 不推荐
 // 不要在 DTO 中添加源类中不存在的字段（除非有特殊原因）</code></pre>
             
-            <h2>24. 常见问题</h2>
+            <h2>13. 常见问题</h2>
             
             <h3>Q: 支持哪些 Java 版本？</h3>
             <p><strong>A</strong>: Java 8 及以上版本。</p>
@@ -1007,10 +682,10 @@ public class UserDto {
             <h3>Q: 支持 Builder 模式吗？</h3>
             <p><strong>A</strong>: 当前版本不支持。Copier 类使用 setter 方法进行赋值。</p>
             
-            <h2>25. 许可证</h2>
+            <h2>14. 许可证</h2>
             <p>Fast Bean Copier 采用 Apache License 2.0 许可证。</p>
             
-            <h2>26. 获取帮助</h2>
+            <h2>15. 获取帮助</h2>
             <p>如有问题，请：</p>
             <ol>
                 <li>查看本参考文档</li>
@@ -1018,18 +693,7 @@ public class UserDto {
                 <li>在 <a href="https://github.com/fast-bean-copier/fast-bean-copier/issues" target="_blank">GitHub Issues</a> 中提出新问题</li>
             </ol>
             
-            <h2>27. 版本历史</h2>
-            
-            <h3>1.3.0（2026-01-14）</h3>
-            <ul>
-                <li>更新现有对象：updateDto/updateEntity 方法</li>
-                <li>映射前回调：beforeMapping 属性</li>
-                <li>条件映射：condition 属性</li>
-                <li>默认值和常量：defaultValue/constant 属性</li>
-                <li>全局配置：@CopyTargetConfig 注解</li>
-                <li>Null 值处理策略：NullValueStrategy 枚举</li>
-                <li>330 个测试用例全部通过</li>
-            </ul>
+            <h2>16. 版本历史</h2>
             
             <h3>1.2.1（2026-01-08）</h3>
             <ul>
@@ -1074,6 +738,6 @@ public class UserDto {
         <p>采用 Apache License 2.0 许可证</p>
     </footer>
     
-    <script src="script.js"></script>
+    <script src="../script.js"></script>
 </body>
 </html>

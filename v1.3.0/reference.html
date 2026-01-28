@@ -4,18 +4,18 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>参考文档 - Fast Bean Copier</title>
-    <link rel="icon" type="image/png" href="favicon.png">
-    <link rel="stylesheet" href="styles.css">
+    <link rel="icon" type="image/png" href="../favicon.png">
+    <link rel="stylesheet" href="../styles.css">
 </head>
 <body>
     <header>
         <div class="container">
             <div class="logo-container">
-                <img src="logo.png" alt="Fast Bean Copier Logo" class="logo">
+                <img src="../logo.png" alt="Fast Bean Copier Logo" class="logo">
                 <h1>🚀 Fast Bean Copier</h1>
             </div>
             <p>高性能的 Java Bean 拷贝工具</p>
-            <div class="version-badge">最新版本 1.3.1</div>
+            <div class="version-badge">版本 1.3.0</div>
         </div>
     </header>
     
@@ -33,7 +33,7 @@
     
     <div class="container">
         <div class="content">
-            <h1>Fast Bean Copier 1.3.1 参考文档</h1>
+            <h1>Fast Bean Copier 1.3.0 参考文档</h1>
             
             <h2>前言</h2>
             <p>本文档是 Fast Bean Copier 的参考文档，Fast Bean Copier 是一个基于注解处理器的 Java Bean 拷贝工具，用于生成类型安全、高性能且零依赖的 Bean 映射代码。</p>
@@ -369,12 +369,8 @@ public class UserService {
     }
 }</code></pre>
             
-            <h2>10. 函数式定制拷贝（v1.2 / v1.3.1 统一行为）</h2>
+            <h2>10. 函数式定制拷贝（v1.2）</h2>
             <p>支持在拷贝完成后立即执行自定义逻辑。函数类型为 <code>java.util.function.UnaryOperator&lt;T&gt;</code>，保证入参与出参一致。</p>
-            
-            <div class="highlight-box">
-                <p><strong>v1.3.1 重要变更：</strong>统一了所有集合类型的 UnaryOperator 行为。List/Set customizer 现在操作整个集合（而非单个元素），与 Map/Array 保持一致，提供更强大的灵活性。</p>
-            </div>
             
             <h3>10.1. 支持的方法</h3>
             <table>
@@ -382,24 +378,23 @@ public class UserService {
                     <tr>
                         <th>方法</th>
                         <th>函数式重载</th>
-                        <th>Customizer 类型</th>
                     </tr>
                 </thead>
                 <tbody>
-                    <tr><td><code>toDto</code></td><td>✅ <code>toDto(source, customizer)</code></td><td><code>UnaryOperator&lt;TargetDto&gt;</code></td></tr>
-                    <tr><td><code>fromDto</code></td><td>✅ <code>fromDto(source, customizer)</code></td><td><code>UnaryOperator&lt;Source&gt;</code></td></tr>
-                    <tr><td><code>toDtoList</code></td><td>✅ <code>toDtoList(sources, customizer)</code></td><td><code>UnaryOperator&lt;List&lt;TargetDto&gt;&gt;</code> (v1.3.1 统一)</td></tr>
-                    <tr><td><code>toDtoSet</code></td><td>✅ <code>toDtoSet(sources, customizer)</code></td><td><code>UnaryOperator&lt;Set&lt;TargetDto&gt;&gt;</code> (v1.3.1 统一)</td></tr>
-                    <tr><td><code>fromDtoList</code></td><td>✅ <code>fromDtoList(sources, customizer)</code></td><td><code>UnaryOperator&lt;List&lt;Source&gt;&gt;</code> (v1.3.1 统一)</td></tr>
-                    <tr><td><code>fromDtoSet</code></td><td>✅ <code>fromDtoSet(sources, customizer)</code></td><td><code>UnaryOperator&lt;Set&lt;Source&gt;&gt;</code> (v1.3.1 统一)</td></tr>
-                    <tr><td><code>toDtoMap</code></td><td>✅ <code>toDtoMap(sources, customizer)</code></td><td><code>UnaryOperator&lt;Map&lt;K, TargetDto&gt;&gt;</code> (v1.3.1 新增)</td></tr>
-                    <tr><td><code>fromDtoMap</code></td><td>✅ <code>fromDtoMap(sources, customizer)</code></td><td><code>UnaryOperator&lt;Map&lt;K, Source&gt;&gt;</code> (v1.3.1 新增)</td></tr>
-                    <tr><td><code>toDtoArray</code></td><td>✅ <code>toDtoArray(sources, customizer)</code></td><td><code>UnaryOperator&lt;TargetDto[]&gt;</code> (v1.3.1 新增)</td></tr>
-                    <tr><td><code>fromDtoArray</code></td><td>✅ <code>fromDtoArray(sources, customizer)</code></td><td><code>UnaryOperator&lt;Source[]&gt;</code> (v1.3.1 新增)</td></tr>
+                    <tr><td><code>toDto</code></td><td>✅ <code>toDto(source, customizer)</code></td></tr>
+                    <tr><td><code>fromDto</code></td><td>✅ <code>fromDto(source, customizer)</code></td></tr>
+                    <tr><td><code>toDtoList</code></td><td>✅ <code>toDtoList(sources, customizer)</code></td></tr>
+                    <tr><td><code>toDtoSet</code></td><td>✅ <code>toDtoSet(sources, customizer)</code></td></tr>
+                    <tr><td><code>fromDtoList</code></td><td>✅ <code>fromDtoList(sources, customizer)</code></td></tr>
+                    <tr><td><code>fromDtoSet</code></td><td>✅ <code>fromDtoSet(sources, customizer)</code></td></tr>
+                    <tr><td><code>toDtoMap</code></td><td>❌ 暂不支持</td></tr>
+                    <tr><td><code>fromDtoMap</code></td><td>❌ 暂不支持</td></tr>
+                    <tr><td><code>toDtoArray</code></td><td>❌ 暂不支持</td></tr>
+                    <tr><td><code>fromDtoArray</code></td><td>❌ 暂不支持</td></tr>
                 </tbody>
             </table>
             
-            <h3>10.2. 单对象定制示例</h3>
+            <h3>10.2. 使用示例</h3>
             <pre><code>// 单个对象
 UserDto dto = UserDtoCopier.toDto(user, result -> {
     result.setDisplayName(result.getName().toUpperCase());
@@ -410,105 +405,27 @@ UserDto dto = UserDtoCopier.toDto(user, result -> {
 User entity = UserDtoCopier.fromDto(userDto, result -> {
     result.setLastSynced(Instant.now());
     return result;
-});</code></pre>
-            
-            <h3>10.3. List 集合定制示例（v1.3.1 统一行为）</h3>
-            <p>v1.3.1 统一后，List customizer 操作整个列表，支持过滤、排序、限制等操作：</p>
-            <pre><code>// 过滤列表 - 只保留价格 >= 100 的元素
-List&lt;UserDto&gt; filteredList = UserDtoCopier.toDtoList(users, list -> 
-    list.stream()
-        .filter(dto -> dto.getPrice() >= 100.0)
-        .collect(Collectors.toList())
-);
-
-// 排序列表
-List&lt;UserDto&gt; sortedList = UserDtoCopier.toDtoList(users, list -> {
-    list.sort(Comparator.comparing(UserDto::getName));
-    return list;
 });
 
-// 限制列表大小 - 只取前 10 个
-List&lt;UserDto&gt; limitedList = UserDtoCopier.toDtoList(users, list -> 
-    list.stream().limit(10).collect(Collectors.toList())
-);
-
-// 转换为不可变列表
-List&lt;UserDto&gt; immutableList = UserDtoCopier.toDtoList(users, 
-    Collections::unmodifiableList
-);
-
-// 如果需要修改每个元素，在 customizer 中遍历
-List&lt;UserDto&gt; modifiedList = UserDtoCopier.toDtoList(users, list -> {
-    list.forEach(dto -> dto.setSource("batch"));
-    return list;
-});</code></pre>
-            
-            <h3>10.4. Set 集合定制示例（v1.3.1 统一行为）</h3>
-            <p>Set customizer 同样操作整个集合：</p>
-            <pre><code>// 过滤 Set
-Set&lt;UserDto&gt; filteredSet = UserDtoCopier.toDtoSet(userSet, set -> 
-    set.stream()
-        .filter(dto -> dto.getId() != null)
-        .collect(Collectors.toCollection(LinkedHashSet::new))
-);
-
-// 转换为不可变 Set
-Set&lt;UserDto&gt; immutableSet = UserDtoCopier.toDtoSet(userSet, 
-    Collections::unmodifiableSet
-);</code></pre>
-            
-            <h3>10.5. Map 集合定制示例（v1.3.1 新增）</h3>
-            <p>Map customizer 操作整个 Map：</p>
-            <pre><code>// 过滤 Map - 移除 null 值条目
-Map&lt;String, UserDto&gt; filteredMap = UserDtoCopier.toDtoMap(userMap, map -> {
-    map.entrySet().removeIf(entry -> entry.getValue() == null);
-    return map;
+// 批量转换
+List&lt;UserDto&gt; dtos = UserDtoCopier.toDtoList(users, result -> {
+    result.setTimestamp(System.currentTimeMillis());
+    return result;
 });
 
-// 转换为不可变 Map
-Map&lt;String, UserDto&gt; immutableMap = UserDtoCopier.toDtoMap(userMap, 
-    Collections::unmodifiableMap
-);
-
-// 添加额外条目
-Map&lt;String, UserDto&gt; enrichedMap = UserDtoCopier.toDtoMap(userMap, map -> {
-    map.put("default", createDefaultUserDto());
-    return map;
+// Set 转换
+Set&lt;UserDto&gt; dtoSet = UserDtoCopier.toDtoSet(userSet, result -> {
+    result.setSource("batch");
+    return result;
 });</code></pre>
             
-            <h3>10.6. Array 数组定制示例（v1.3.1 新增）</h3>
-            <p>Array customizer 操作整个数组：</p>
-            <pre><code>// 过滤数组 - 移除 null 元素
-UserDto[] filteredArray = UserDtoCopier.toDtoArray(users, array -> 
-    Arrays.stream(array)
-        .filter(dto -> dto != null && dto.getId() != null)
-        .toArray(UserDto[]::new)
-);
-
-// 排序数组
-UserDto[] sortedArray = UserDtoCopier.toDtoArray(users, array -> {
-    Arrays.sort(array, Comparator.comparing(UserDto::getName));
-    return array;
-});
-
-// 限制数组大小
-UserDto[] limitedArray = UserDtoCopier.toDtoArray(users, array -> 
-    Arrays.copyOf(array, Math.min(10, array.length))
-);</code></pre>
-            
-            <h3>10.7. null 安全</h3>
+            <h3>10.3. null 安全</h3>
             <p>当源对象为 null 时，customizer 函数不会被调用：</p>
             <pre><code>UserDto dto = UserDtoCopier.toDto(null, result -> {
     // 这里不会执行
     return result;
 });
-// dto 为 null
-
-List&lt;UserDto&gt; list = UserDtoCopier.toDtoList(null, result -> {
-    // 这里不会执行
-    return result;
-});
-// list 为 null</code></pre>
+// dto 为 null</code></pre>
             
             <h2>11. 自定义转换器（v1.2）</h2>
             
@@ -750,10 +667,10 @@ public class UserDto {
                 </tbody>
             </table>
             
-            <h2>16. 全局配置（v1.3/v1.3.1）</h2>
-            <p>v1.3 新增 <code>@CopyTargetConfig</code> 注解用于包级别配置，v1.3.1 新增 Properties 配置文件支持。</p>
+            <h2>16. 全局配置（v1.3）</h2>
+            <p>v1.3 新增 <code>@CopyTargetConfig</code> 注解，用于在包级别配置默认行为。</p>
             
-            <h3>16.1. @CopyTargetConfig 包级别配置（v1.3）</h3>
+            <h3>16.1. 基本用法</h3>
             <p>在 <code>package-info.java</code> 文件中使用：</p>
             <pre><code>// package-info.java
 @CopyTargetConfig(
@@ -764,15 +681,7 @@ package com.example.dto;
 
 import com.github.jackieonway.copier.annotation.*;</code></pre>
             
-            <h3>16.2. Properties 配置文件支持（v1.3.1 新增）</h3>
-            <p>在 <code>src/main/resources/</code> 目录下创建 <code>fast-bean-copier.properties</code> 文件：</p>
-            <pre><code># 组件模型：DEFAULT, SPRING, CDI, JSR330
-fast.bean.copier.componentModel=SPRING
-
-# 空值策略：IGNORE, REPLACE
-fast.bean.copier.nullValueStrategy=IGNORE</code></pre>
-            
-            <h3>16.3. 配置属性</h3>
+            <h3>16.2. 配置属性</h3>
             <table>
                 <thead>
                     <tr>
@@ -798,32 +707,24 @@ fast.bean.copier.nullValueStrategy=IGNORE</code></pre>
                 </tbody>
             </table>
             
-            <h3>16.4. 配置优先级</h3>
+            <h3>16.3. 配置优先级</h3>
             <p>配置优先级从高到低：</p>
             <ol>
                 <li><strong>类级别</strong>：<code>@CopyTarget</code> 注解中的配置</li>
                 <li><strong>包级别</strong>：<code>@CopyTargetConfig</code> 注解中的配置</li>
-                <li><strong>配置文件</strong>：<code>fast-bean-copier.properties</code> 文件中的配置（v1.3.1 新增）</li>
                 <li><strong>默认值</strong>：框架默认配置</li>
             </ol>
-            <pre><code>// 配置文件中设置 SPRING
-fast.bean.copier.componentModel=SPRING
-
-// 包级别覆盖为 CDI
-@CopyTargetConfig(componentModel = ComponentModel.CDI)
+            <pre><code>// 包级别配置 Spring
+@CopyTargetConfig(componentModel = ComponentModel.SPRING)
 package com.example.dto;
 
-// 类级别覆盖为 DEFAULT
-@CopyTarget(source = User.class, componentModel = ComponentModel.DEFAULT)
-public class UserDto { }  // 使用 DEFAULT
+// 类级别覆盖为 CDI
+@CopyTarget(source = User.class, componentModel = ComponentModel.CDI)
+public class UserDto { }  // 使用 CDI
 
 // 类级别未指定，使用包级别配置
 @CopyTarget(source = Order.class)
-public class OrderDto { }  // 使用 CDI（包级别）
-
-// 包级别也未指定，使用配置文件
-@CopyTarget(source = Product.class)
-public class ProductDto { }  // 使用 SPRING（配置文件）</code></pre>
+public class OrderDto { }  // 使用 SPRING</code></pre>
             
             <h2>17. Null 值处理策略（v1.3）</h2>
             <p>v1.3 新增 <code>NullValueStrategy</code> 枚举，用于控制 null 值的处理方式。</p>
@@ -1173,6 +1074,6 @@ public class UserDto {
         <p>采用 Apache License 2.0 许可证</p>
     </footer>
     
-    <script src="script.js"></script>
+    <script src="../script.js"></script>
 </body>
 </html>

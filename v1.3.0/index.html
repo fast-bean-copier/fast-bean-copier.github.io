@@ -4,18 +4,18 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Fast Bean Copier 文档</title>
-    <link rel="icon" type="image/png" href="favicon.png">
-    <link rel="stylesheet" href="styles.css">
+    <link rel="icon" type="image/png" href="../favicon.png">
+    <link rel="stylesheet" href="../styles.css">
 </head>
 <body>
     <header>
         <div class="container">
             <div class="logo-container">
-                <img src="logo.png" alt="Fast Bean Copier Logo" class="logo">
+                <img src="../logo.png" alt="Fast Bean Copier Logo" class="logo">
                 <h1>🚀 Fast Bean Copier</h1>
             </div>
             <p>高性能的 Java Bean 拷贝工具</p>
-            <div class="version-badge">最新版本 1.3.1</div>
+            <div class="version-badge">版本 1.3.0</div>
         </div>
     </header>
     
@@ -38,7 +38,7 @@
             <p>Fast Bean Copier 是一个基于注解处理器的 Java Bean 拷贝工具，用于生成类型安全、高性能且零依赖的 Bean 映射代码。</p>
             
             <div class="highlight-box">
-                <p><strong>v1.3.1 更新：</strong>统一所有集合类型的 UnaryOperator 行为（List/Set/Map/Array）、Properties 配置文件支持、逆向转换智能跳过特殊字段。</p>
+                <p><strong>v1.3.0 更新：</strong>更新现有对象（updateDto/updateEntity）、映射前回调（beforeMapping）、条件映射（condition）、默认值和常量（defaultValue/constant）、全局配置（@CopyTargetConfig）、Null 值处理策略（NullValueStrategy）。</p>
             </div>
             
             <h2>✨ 核心特性</h2>
@@ -77,7 +77,7 @@
                 </div>
                 <div class="feature-card">
                     <h3>🎨 函数式定制</h3>
-                    <p>UnaryOperator 重载，统一的集合级别定制（List/Set/Map/Array），支持过滤、排序、不可变转换（v1.3.1 统一）</p>
+                    <p>UnaryOperator 重载，拷贝后立即执行自定义逻辑</p>
                 </div>
                 <div class="feature-card">
                     <h3>� 更新现有对象</h3>
@@ -97,7 +97,7 @@
                 </div>
                 <div class="feature-card">
                     <h3>🌐 全局配置</h3>
-                    <p>@CopyTargetConfig 包级别配置 + Properties 配置文件支持，统一管理组件模型和 Null 值策略（v1.3/v1.3.1）</p>
+                    <p>@CopyTargetConfig 包级别配置，统一管理组件模型和 Null 值策略（v1.3 新增）</p>
                 </div>
                 <div class="feature-card">
                     <h3>📚 完整文档</h3>
@@ -112,13 +112,13 @@
             <pre><code>&lt;dependency&gt;
     &lt;groupId&gt;com.github.jackieonway&lt;/groupId&gt;
     &lt;artifactId&gt;fast-bean-copier-annotations&lt;/artifactId&gt;
-    &lt;version&gt;1.3.1&lt;/version&gt;
+    &lt;version&gt;1.3.0&lt;/version&gt;
 &lt;/dependency&gt;
 
 &lt;dependency&gt;
     &lt;groupId&gt;com.github.jackieonway&lt;/groupId&gt;
     &lt;artifactId&gt;fast-bean-copier-processor&lt;/artifactId&gt;
-    &lt;version&gt;1.3.1&lt;/version&gt;
+    &lt;version&gt;1.3.0&lt;/version&gt;
     &lt;scope&gt;provided&lt;/scope&gt;
 &lt;/dependency&gt;</code></pre>
             
@@ -163,40 +163,40 @@ UserDto userDto = UserDtoCopier.toDto(user);</code></pre>
                     </thead>
                     <tbody>
                         <tr>
-                            <td><strong>1.3.1</strong></td>
+                            <td><a href="../index.html">1.3.1</a></td>
                             <td>2026-01-28</td>
                             <td>Map/Array UnaryOperator 重载、Properties 配置文件、逆向转换智能跳过</td>
-                            <td><span class="current-version">当前版本</span></td>
+                            <td><a href="../index.html">查看文档</a></td>
                         </tr>
                         <tr>
-                            <td><a href="v1.3.0/index.html">1.3.0</a></td>
+                            <td><strong>1.3.0</strong></td>
                             <td>2026-01-14</td>
                             <td>更新现有对象、映射前回调、条件映射、默认值和常量、全局配置</td>
-                            <td><a href="v1.3.0/index.html">查看文档</a></td>
+                            <td>当前文档</td>
                         </tr>
                         <tr>
-                            <td><a href="v1.2.1/index.html">1.2.1</a></td>
+                            <td><a href="../v1.2.1/index.html">1.2.1</a></td>
                             <td>2026-01-08</td>
                             <td>Bug 修复、稳定性改进</td>
-                            <td><a href="v1.2.1/index.html">查看文档</a></td>
+                            <td><a href="../v1.2.1/index.html">查看文档</a></td>
                         </tr>
                         <tr>
-                            <td><a href="v1.2.0/index.html">1.2.0</a></td>
+                            <td><a href="../v1.2.0/index.html">1.2.0</a></td>
                             <td>2025-12-29</td>
                             <td>多字段映射、TypeConverter、依赖注入</td>
-                            <td><a href="v1.2.0/index.html">查看文档</a></td>
+                            <td><a href="../v1.2.0/index.html">查看文档</a></td>
                         </tr>
                         <tr>
-                            <td><a href="v1.1.0/index.html">1.1.0</a></td>
+                            <td><a href="../v1.1.0/index.html">1.1.0</a></td>
                             <td>2025-12-23</td>
                             <td>集合深拷贝、批量方法、多维数组</td>
-                            <td><a href="v1.1.0/index.html">查看文档</a></td>
+                            <td><a href="../v1.1.0/index.html">查看文档</a></td>
                         </tr>
                         <tr>
-                            <td><a href="v1.0.0/index.html">1.0.0</a></td>
+                            <td><a href="../v1.0.0/index.html">1.0.0</a></td>
                             <td>2025-12-13</td>
                             <td>初始版本、基础拷贝功能</td>
-                            <td><a href="v1.0.0/index.html">查看文档</a></td>
+                            <td><a href="../v1.0.0/index.html">查看文档</a></td>
                         </tr>
                     </tbody>
                 </table>
@@ -209,7 +209,7 @@ UserDto userDto = UserDtoCopier.toDto(user);</code></pre>
         <p>采用 Apache License 2.0 许可证</p>
     </footer>
     
-    <script src="script.js"></script>
+    <script src="../script.js"></script>
 </body>
 </html>
 

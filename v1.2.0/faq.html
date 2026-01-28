@@ -114,12 +114,12 @@ public class UserDto { }</code></pre>
             <p><strong>A</strong>: 使用 <code>@CopyField</code> 注解的 <code>source</code> 和 <code>expression</code> 属性（v1.2.0+）：</p>
             <pre><code>// 多对一：firstName + lastName -> fullName
 @CopyField(source = {"firstName", "lastName"}, 
-           expression = "source.getFirstName() + \" \" + source.getLastName()")
+           expression = "java(source.getFirstName() + \" \" + source.getLastName())")
 private String fullName;
 
 // 一对多：fullName -> firstName
 @CopyField(source = "fullName", 
-           expression = "source.getFullName().split(\" \")[0]")
+           expression = "java(source.getFullName().split(\" \")[0])")
 private String firstName;</code></pre>
             
             <h3>Q: 如何使用函数式定制？</h3>

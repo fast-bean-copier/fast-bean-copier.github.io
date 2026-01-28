@@ -15,7 +15,7 @@
                 <h1>🚀 Fast Bean Copier</h1>
             </div>
             <p>高性能的 Java Bean 拷贝工具</p>
-            <div class="version-badge">最新版本 1.3.0</div>
+            <div class="version-badge">最新版本 1.3.1</div>
         </div>
     </header>
     
@@ -232,7 +232,7 @@ public @interface CopyField {
             <h4>示例</h4>
             <pre><code>// 多对一映射
 @CopyField(source = {"firstName", "lastName"}, 
-           expression = "source.getFirstName() + \" \" + source.getLastName()")
+           expression = "java(source.getFirstName() + \" \" + source.getLastName())")
 private String fullName;
 
 // 使用 TypeConverter
@@ -598,58 +598,96 @@ List&lt;User&gt; users = UserDtoCopier.fromDtoList(userDtos);</code></pre>
     return result;
 });</code></pre>
             
-            <h4>toDtoList(sources, customizer)（v1.2 新增）</h4>
-            <p>将源对象列表转换为目标 DTO 对象列表，并对每个元素应用自定义逻辑。</p>
+            <h4>toDtoList(sources, customizer)（v1.2 新增 / v1.3.1 统一行为）</h4>
+            <p>将源对象列表转换为目标 DTO 对象列表，并对整个列表应用自定义逻辑。</p>
+            <p><strong>v1.3.1 变更</strong>：customizer 现在操作整个列表而非单个元素，支持过滤、排序、限制等操作。</p>
             <p><strong>签名</strong>：</p>
             <pre><code>public static java.util.List&lt;TargetType&gt; toDtoList(
     java.util.List&lt;SourceType&gt; sources, 
-    UnaryOperator&lt;TargetType&gt; customizer)</code></pre>
+    UnaryOperator&lt;java.util.List&lt;TargetType&gt;&gt; customizer)</code></pre>
             <p><strong>示例</strong>：</p>
-            <pre><code>List&lt;UserDto&gt; dtos = UserDtoCopier.toDtoList(users, result -> {
-    result.setTimestamp(System.currentTimeMillis());
-    return result;
+            <pre><code>// 过滤列表
+List&lt;UserDto&gt; filtered = UserDtoCopier.toDtoList(users, list -> 
+    list.stream()
+        .filter(dto -> dto.getPrice() >= 100)
+        .collect(Collectors.toList())
+);
+
+// 排序列表
+List&lt;UserDto&gt; sorted = UserDtoCopier.toDtoList(users, list -> {
+    list.sort(Comparator.comparing(UserDto::getName));
+    return list;
 });</code></pre>
             
-            <h4>toDtoSet(sources, customizer)（v1.2 新增）</h4>
-            <p>将源对象集合转换为目标 DTO 对象集合，并对每个元素应用自定义逻辑。</p>
+            <h4>toDtoSet(sources, customizer)（v1.2 新增 / v1.3.1 统一行为）</h4>
+            <p>将源对象集合转换为目标 DTO 对象集合，并对整个集合应用自定义逻辑。</p>
+            <p><strong>v1.3.1 变更</strong>：customizer 现在操作整个集合而非单个元素。</p>
             <p><strong>签名</strong>：</p>
             <pre><code>public static java.util.Set&lt;TargetType&gt; toDtoSet(
     java.util.Set&lt;SourceType&gt; sources, 
-    UnaryOperator&lt;TargetType&gt; customizer)</code></pre>
+    UnaryOperator&lt;java.util.Set&lt;TargetType&gt;&gt; customizer)</code></pre>
             
-            <h4>fromDtoList(sources, customizer)（v1.2 新增）</h4>
-            <p>将目标 DTO 对象列表转换回源对象列表，并对每个元素应用自定义逻辑。</p>
+            <h4>fromDtoList(sources, customizer)（v1.2 新增 / v1.3.1 统一行为）</h4>
+            <p>将目标 DTO 对象列表转换回源对象列表，并对整个列表应用自定义逻辑。</p>
             <p><strong>签名</strong>：</p>
             <pre><code>public static java.util.List&lt;SourceType&gt; fromDtoList(
     java.util.List&lt;TargetType&gt; sources, 
-    UnaryOperator&lt;SourceType&gt; customizer)</code></pre>
+    UnaryOperator&lt;java.util.List&lt;SourceType&gt;&gt; customizer)</code></pre>
             
-            <h4>fromDtoSet(sources, customizer)（v1.2 新增）</h4>
-            <p>将目标 DTO 对象集合转换回源对象集合，并对每个元素应用自定义逻辑。</p>
+            <h4>fromDtoSet(sources, customizer)（v1.2 新增 / v1.3.1 统一行为）</h4>
+            <p>将目标 DTO 对象集合转换回源对象集合，并对整个集合应用自定义逻辑。</p>
             <p><strong>签名</strong>：</p>
             <pre><code>public static java.util.Set&lt;SourceType&gt; fromDtoSet(
     java.util.Set&lt;TargetType&gt; sources, 
-    UnaryOperator&lt;SourceType&gt; customizer)</code></pre>
+    UnaryOperator&lt;java.util.Set&lt;SourceType&gt;&gt; customizer)</code></pre>
             
             <h4>toDtoMap(sources)</h4>
             <p>将源对象 Map 转换为目标 DTO Map（保留 Key，拷贝 Value）。</p>
             <p><strong>签名</strong>：</p>
             <pre><code>public static &lt;K&gt; java.util.Map&lt;K, TargetType&gt; toDtoMap(java.util.Map&lt;K, SourceType&gt; sources)</code></pre>
             
+            <h4>toDtoMap(sources, customizer)（v1.3.1 新增）</h4>
+            <p>将源对象 Map 转换为目标 DTO Map，并对整个 Map 应用自定义逻辑。</p>
+            <p><strong>签名</strong>：</p>
+            <pre><code>public static &lt;K&gt; java.util.Map&lt;K, TargetType&gt; toDtoMap(
+    java.util.Map&lt;K, SourceType&gt; sources,
+    UnaryOperator&lt;java.util.Map&lt;K, TargetType&gt;&gt; customizer)</code></pre>
+            
             <h4>fromDtoMap(sources)</h4>
             <p>将目标 DTO Map 反向转换为源对象 Map。</p>
             <p><strong>签名</strong>：</p>
             <pre><code>public static &lt;K&gt; java.util.Map&lt;K, SourceType&gt; fromDtoMap(java.util.Map&lt;K, TargetType&gt; sources)</code></pre>
+            
+            <h4>fromDtoMap(sources, customizer)（v1.3.1 新增）</h4>
+            <p>将目标 DTO Map 反向转换为源对象 Map，并对整个 Map 应用自定义逻辑。</p>
+            <p><strong>签名</strong>：</p>
+            <pre><code>public static &lt;K&gt; java.util.Map&lt;K, SourceType&gt; fromDtoMap(
+    java.util.Map&lt;K, TargetType&gt; sources,
+    UnaryOperator&lt;java.util.Map&lt;K, SourceType&gt;&gt; customizer)</code></pre>
             
             <h4>toDtoArray(sources)</h4>
             <p>将源对象数组转换为目标 DTO 数组。</p>
             <p><strong>签名</strong>：</p>
             <pre><code>public static TargetType[] toDtoArray(SourceType[] sources)</code></pre>
             
+            <h4>toDtoArray(sources, customizer)（v1.3.1 新增）</h4>
+            <p>将源对象数组转换为目标 DTO 数组，并对整个数组应用自定义逻辑。</p>
+            <p><strong>签名</strong>：</p>
+            <pre><code>public static TargetType[] toDtoArray(
+    SourceType[] sources,
+    UnaryOperator&lt;TargetType[]&gt; customizer)</code></pre>
+            
             <h4>fromDtoArray(sources)</h4>
             <p>将目标 DTO 数组转换回源对象数组。</p>
             <p><strong>签名</strong>：</p>
             <pre><code>public static SourceType[] fromDtoArray(TargetType[] sources)</code></pre>
+            
+            <h4>fromDtoArray(sources, customizer)（v1.3.1 新增）</h4>
+            <p>将目标 DTO 数组转换回源对象数组，并对整个数组应用自定义逻辑。</p>
+            <p><strong>签名</strong>：</p>
+            <pre><code>public static SourceType[] fromDtoArray(
+    TargetType[] sources,
+    UnaryOperator&lt;SourceType[]&gt; customizer)</code></pre>
             
             <h2>类型转换</h2>
             

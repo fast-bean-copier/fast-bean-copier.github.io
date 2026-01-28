@@ -15,7 +15,7 @@
                 <h1>🚀 Fast Bean Copier</h1>
             </div>
             <p>高性能的 Java Bean 拷贝工具</p>
-            <div class="version-badge">最新版本 1.3.0</div>
+            <div class="version-badge">最新版本 1.3.1</div>
         </div>
     </header>
     
@@ -46,13 +46,13 @@
             <pre><code>&lt;dependency&gt;
     &lt;groupId&gt;com.github.jackieonway&lt;/groupId&gt;
     &lt;artifactId&gt;fast-bean-copier-annotations&lt;/artifactId&gt;
-    &lt;version&gt;1.3.0&lt;/version&gt;
+    &lt;version&gt;1.3.1&lt;/version&gt;
 &lt;/dependency&gt;
 
 &lt;dependency&gt;
     &lt;groupId&gt;com.github.jackieonway&lt;/groupId&gt;
     &lt;artifactId&gt;fast-bean-copier-processor&lt;/artifactId&gt;
-    &lt;version&gt;1.3.0&lt;/version&gt;
+    &lt;version&gt;1.3.1&lt;/version&gt;
     &lt;scope&gt;provided&lt;/scope&gt;
 &lt;/dependency&gt;</code></pre>
             
@@ -201,7 +201,7 @@ Set&lt;User&gt; entities = UserDtoCopier.fromDtoSet(dtoSet);</code></pre>
             <pre><code>@CopyTarget(source = Person.class)
 public class PersonDto {
     @CopyField(source = {"firstName", "lastName"}, 
-               expression = "source.getFirstName() + \" \" + source.getLastName()")
+               expression = "java(source.getFirstName() + \" \" + source.getLastName())")
     private String fullName;
 }</code></pre>
             
@@ -209,7 +209,7 @@ public class PersonDto {
             <pre><code>@CopyTarget(source = FullNameSource.class)
 public class NameDto {
     @CopyField(source = "fullName", 
-               expression = "source.getFullName().split(\" \")[0]")
+               expression = "java(source.getFullName().split(\" \")[0])")
     private String firstName;
 }</code></pre>
             
@@ -242,30 +242,40 @@ public class UserService {
     }
 }</code></pre>
             
-            <h3>函数式定制</h3>
-            <pre><code>UserDto dto = UserDtoCopier.toDto(user, result -> {
+            <h3>函数式定制（v1.3.1 统一行为）</h3>
+            <p><strong>v1.3.1 重要变更</strong>：所有集合类型的 customizer 现在都操作整个集合，提供一致且强大的定制能力。</p>
+            
+            <pre><code>// 单对象定制
+UserDto dto = UserDtoCopier.toDto(user, result -> {
     result.setDisplayName(result.getName().toUpperCase());
     return result;
 });
 
-// 批量转换时也支持
-List&lt;UserDto&gt; dtos = UserDtoCopier.toDtoList(users, result -> {
-    result.setTimestamp(System.currentTimeMillis());
-    return result;
+// List 定制 - 过滤、排序、限制（v1.3.1 统一行为）
+List&lt;UserDto&gt; filteredList = UserDtoCopier.toDtoList(users, list -> 
+    list.stream()
+        .filter(dto -> dto.getPrice() >= 100)
+        .sorted(Comparator.comparing(UserDto::getName))
+        .limit(10)
+        .collect(Collectors.toList())
+);
+
+// Set 定制 - 转换为不可变集合（v1.3.1 统一行为）
+Set&lt;UserDto&gt; immutableSet = UserDtoCopier.toDtoSet(userSet, 
+    Collections::unmodifiableSet
+);
+
+// Map 定制 - 过滤条目（v1.3.1 新增）
+Map&lt;String, UserDto&gt; filteredMap = UserDtoCopier.toDtoMap(userMap, map -> {
+    map.entrySet().removeIf(entry -> entry.getValue() == null);
+    return map;
 });
 
-// 反向转换
-User entity = UserDtoCopier.fromDto(userDto, result -> {
-    result.setLastSynced(Instant.now());
-    return result;
-});
-
-// Set 转换
-Set&lt;UserDto&gt; dtoSet = UserDtoCopier.toDtoSet(userSet, result -> {
-    result.setSource("batch");
-    return result;
+// Array 定制 - 排序（v1.3.1 新增）
+UserDto[] sortedArray = UserDtoCopier.toDtoArray(users, array -> {
+    Arrays.sort(array, Comparator.comparing(UserDto::getName));
+    return array;
 });</code></pre>
-            <p><strong>注意</strong>：Map 和数组方法（<code>toDtoMap</code>、<code>toDtoArray</code> 等）暂不支持函数式重载。</p>
             
             <h2>v1.3 新功能</h2>
             
@@ -328,7 +338,8 @@ public class UserDto {
     private String version;
 }</code></pre>
             
-            <h3>全局配置</h3>
+            <h3>全局配置（v1.3/v1.3.1）</h3>
+            <p><strong>方式 1：包级别配置（v1.3）</strong></p>
             <pre><code>// package-info.java
 @CopyTargetConfig(
     componentModel = ComponentModel.SPRING,
@@ -337,6 +348,13 @@ public class UserDto {
 package com.example.dto;
 
 import com.github.jackieonway.copier.annotation.*;</code></pre>
+            
+            <p><strong>方式 2：Properties 配置文件（v1.3.1 新增）</strong></p>
+            <pre><code># src/main/resources/fast-bean-copier.properties
+fast.bean.copier.componentModel=SPRING
+fast.bean.copier.nullValueStrategy=IGNORE</code></pre>
+            
+            <p><strong>配置优先级：</strong>类级别 &gt; 包级别 &gt; 配置文件 &gt; 默认值</p>
             
             <h3>Null 值处理策略</h3>
             <pre><code>// IGNORE：忽略 null 值，不更新目标字段（默认）

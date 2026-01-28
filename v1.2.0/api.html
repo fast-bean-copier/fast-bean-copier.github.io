@@ -150,7 +150,7 @@ public @interface CopyField {
             <h4>示例</h4>
             <pre><code>// 多对一映射
 @CopyField(source = {"firstName", "lastName"}, 
-           expression = "source.getFirstName() + \" \" + source.getLastName()")
+           expression = "java(source.getFirstName() + \" \" + source.getLastName())")
 private String fullName;
 
 // 使用 TypeConverter

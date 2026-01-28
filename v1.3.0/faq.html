@@ -15,7 +15,7 @@
                 <h1>🚀 Fast Bean Copier</h1>
             </div>
             <p>高性能的 Java Bean 拷贝工具</p>
-            <div class="version-badge">版本 1.2.1</div>
+            <div class="version-badge">版本 1.3.0</div>
         </div>
     </header>
     
@@ -39,6 +39,87 @@
             <p>本项目采用 Apache License 2.0 许可证。</p>
             
             <h2>基本问题</h2>
+            
+            <h3>Q: v1.3 有哪些新增/改进？</h3>
+            <p><strong>A</strong>: 主要新增更新现有对象（updateDto/updateEntity）、映射前回调（beforeMapping）、条件映射（condition）、默认值和常量（defaultValue/constant）、全局配置（@CopyTargetConfig）、Null 值处理策略（NullValueStrategy）。</p>
+            
+            <h3>Q: 如何使用 updateDto/updateEntity 更新现有对象？</h3>
+            <p><strong>A</strong>: v1.3 新增的 updateDto 和 updateEntity 方法用于更新已存在的对象：</p>
+            <pre><code>// 更新已存在的 DTO
+UserDto existingDto = new UserDto();
+existingDto.setName("原始名称");
+UserDtoCopier.updateDto(existingDto, user);
+// existingDto 的字段被更新为 user 的值
+
+// 更新已存在的实体（反向）
+User existingUser = new User();
+UserDtoCopier.updateEntity(existingUser, userDto);</code></pre>
+            
+            <h3>Q: 如何使用 beforeMapping 映射前回调？</h3>
+            <p><strong>A</strong>: 在 @CopyTarget 中指定 beforeMapping 属性，并在目标类中定义对应的 default 方法：</p>
+            <pre><code>@CopyTarget(source = User.class, beforeMapping = "validateAndPrepare")
+public class UserDto {
+    // 映射前回调方法（必须是 default 方法）
+    default void validateAndPrepare(User source) {
+        if (source.getName() == null) {
+            throw new IllegalArgumentException("Name cannot be null");
+        }
+    }
+}</code></pre>
+            
+            <h3>Q: 如何使用条件映射（condition）？</h3>
+            <p><strong>A</strong>: 使用 @CopyField 的 condition 属性指定条件表达式：</p>
+            <pre><code>@CopyTarget(source = User.class)
+public class UserDto {
+    // 只有当源字段不为 null 时才映射
+    @CopyField(condition = "java(source.getName() != null)")
+    private String name;
+    
+    // 复杂条件
+    @CopyField(condition = "java(source.getAge() != null && source.getAge() > 0)")
+    private Integer age;
+}</code></pre>
+            
+            <h3>Q: 如何使用默认值（defaultValue）和常量（constant）？</h3>
+            <p><strong>A</strong>: 使用 @CopyField 的 defaultValue 或 constant 属性：</p>
+            <pre><code>@CopyTarget(source = User.class)
+public class UserDto {
+    // 当源字段为 null 时使用默认值
+    @CopyField(defaultValue = "未知")
+    private String name;
+    
+    // 始终使用常量值，忽略源字段
+    @CopyField(constant = "SYSTEM")
+    private String createdBy;
+}</code></pre>
+            <p><strong>区别</strong>：defaultValue 仅当源字段为 null 时使用；constant 始终使用，忽略源字段。</p>
+            
+            <h3>Q: 如何使用全局配置（@CopyTargetConfig）？</h3>
+            <p><strong>A</strong>: 在 package-info.java 中使用 @CopyTargetConfig 注解：</p>
+            <pre><code>// package-info.java
+@CopyTargetConfig(
+    componentModel = ComponentModel.SPRING,
+    nullValueStrategy = NullValueStrategy.IGNORE
+)
+package com.example.dto;
+
+import com.github.jackieonway.copier.annotation.*;</code></pre>
+            <p>配置优先级：类级别 > 包级别 > 默认值。</p>
+            
+            <h3>Q: NullValueStrategy 的 IGNORE 和 REPLACE 有什么区别？</h3>
+            <p><strong>A</strong>: </p>
+            <ul>
+                <li><strong>IGNORE</strong>（默认）：源字段为 null 时，不更新目标字段，保留原有值</li>
+                <li><strong>REPLACE</strong>：源字段为 null 时，将目标字段也设置为 null</li>
+            </ul>
+            <pre><code>// IGNORE 策略示例
+existingDto.setEmail("old@example.com");
+user.setEmail(null);
+UserDtoCopier.updateDto(existingDto, user);
+// existingDto.email 仍为 "old@example.com"
+
+// REPLACE 策略示例
+// existingDto.email 会被设置为 null</code></pre>
             
             <h3>Q: v1.2 有哪些新增/改进？</h3>
             <p><strong>A</strong>: 主要新增多字段映射（多对一、一对多）、6 种内置 TypeConverter 类型转换器（NumberFormatter、NumberParser、DateFormatter、DateParser、EnumStringConverter、JsonConverter）、表达式映射、依赖注入支持（Spring/CDI/JSR330）、函数式定制拷贝。</p>
@@ -64,8 +145,8 @@
             <h3>Q: 可以在 Gradle 项目中使用吗？</h3>
             <p><strong>A</strong>: 可以。在 <code>build.gradle</code> 中添加：</p>
             <pre><code>dependencies {
-    implementation 'com.github.jackieonway:fast-bean-copier-annotations:1.2.1'
-    annotationProcessor 'com.github.jackieonway:fast-bean-copier-processor:1.2.1'
+    implementation 'com.github.jackieonway:fast-bean-copier-annotations:1.3.0'
+    annotationProcessor 'com.github.jackieonway:fast-bean-copier-processor:1.3.0'
 }</code></pre>
             
             <h2>功能问题</h2>

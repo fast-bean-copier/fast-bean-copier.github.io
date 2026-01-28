@@ -280,7 +280,7 @@ List&lt;UserDto&gt; dtos = UserDtoCopier.toDtoList(Arrays.asList(user1, null, us
             <pre><code>@CopyTarget(source = Person.class)
 public class PersonDto {
     @CopyField(source = {"firstName", "lastName"}, 
-               expression = "source.getFirstName() + \" \" + source.getLastName()")
+               expression = "java(source.getFirstName() + \" \" + source.getLastName())")
     private String fullName;
 }</code></pre>
             
@@ -289,11 +289,11 @@ public class PersonDto {
             <pre><code>@CopyTarget(source = FullNameSource.class)
 public class NameDto {
     @CopyField(source = "fullName", 
-               expression = "source.getFullName().split(\" \")[0]")
+               expression = "java(source.getFullName().split(\" \")[0])")
     private String firstName;
     
     @CopyField(source = "fullName", 
-               expression = "source.getFullName().split(\" \")[1]")
+               expression = "java(source.getFullName().split(\" \")[1])")
     private String lastName;
 }</code></pre>
             

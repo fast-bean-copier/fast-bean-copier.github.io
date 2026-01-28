@@ -15,7 +15,7 @@
                 <h1>🚀 Fast Bean Copier</h1>
             </div>
             <p>高性能的 Java Bean 拷贝工具</p>
-            <div class="version-badge">最新版本 1.3.0</div>
+            <div class="version-badge">最新版本 1.3.1</div>
         </div>
     </header>
     
@@ -39,6 +39,16 @@
             <p>本项目采用 Apache License 2.0 许可证。</p>
             
             <h2>基本问题</h2>
+            
+            <h3>Q: v1.3.1 有哪些新增功能？</h3>
+            <p><strong>A</strong>: v1.3.1 主要新增和改进：</p>
+            <ul>
+                <li><strong>统一 UnaryOperator 行为</strong>：所有集合类型（List/Set/Map/Array）的 customizer 现在都操作整个集合，提供一致且强大的定制能力</li>
+                <li><strong>List/Set UnaryOperator 增强</strong>：从操作单个元素改为操作整个集合，支持过滤、排序、限制、不可变转换等高级操作</li>
+                <li><strong>Map/Array UnaryOperator 重载</strong>：新增 Map 和 Array 批量转换的 UnaryOperator 重载方法</li>
+                <li><strong>Properties 配置文件支持</strong>：通过 fast-bean-copier.properties 文件进行全局配置</li>
+                <li><strong>逆向转换智能跳过</strong>：自动跳过使用了特殊映射配置的字段（typeConverter、expression、qualifiedByName、constant）</li>
+            </ul>
             
             <h3>Q: v1.3 有哪些新增/改进？</h3>
             <p><strong>A</strong>: 主要新增更新现有对象（updateDto/updateEntity）、映射前回调（beforeMapping）、条件映射（condition）、默认值和常量（defaultValue/constant）、全局配置（@CopyTargetConfig）、Null 值处理策略（NullValueStrategy）。</p>
@@ -94,8 +104,9 @@ public class UserDto {
 }</code></pre>
             <p><strong>区别</strong>：defaultValue 仅当源字段为 null 时使用；constant 始终使用，忽略源字段。</p>
             
-            <h3>Q: 如何使用全局配置（@CopyTargetConfig）？</h3>
-            <p><strong>A</strong>: 在 package-info.java 中使用 @CopyTargetConfig 注解：</p>
+            <h3>Q: 如何使用全局配置？</h3>
+            <p><strong>A</strong>: v1.3.1 提供两种方式：</p>
+            <p><strong>方式 1：包级别配置（v1.3）</strong></p>
             <pre><code>// package-info.java
 @CopyTargetConfig(
     componentModel = ComponentModel.SPRING,
@@ -104,7 +115,13 @@ public class UserDto {
 package com.example.dto;
 
 import com.github.jackieonway.copier.annotation.*;</code></pre>
-            <p>配置优先级：类级别 > 包级别 > 默认值。</p>
+            
+            <p><strong>方式 2：Properties 配置文件（v1.3.1 新增）</strong></p>
+            <pre><code># src/main/resources/fast-bean-copier.properties
+fast.bean.copier.componentModel=SPRING
+fast.bean.copier.nullValueStrategy=IGNORE</code></pre>
+            
+            <p><strong>配置优先级：</strong>类级别 > 包级别 > 配置文件 > 默认值。</p>
             
             <h3>Q: NullValueStrategy 的 IGNORE 和 REPLACE 有什么区别？</h3>
             <p><strong>A</strong>: </p>
@@ -120,6 +137,70 @@ UserDtoCopier.updateDto(existingDto, user);
 
 // REPLACE 策略示例
 // existingDto.email 会被设置为 null</code></pre>
+            
+            <h3>Q: v1.3.1 统一 UnaryOperator 行为是什么意思？</h3>
+            <p><strong>A</strong>: v1.3.1 统一了所有集合类型的 UnaryOperator 行为，现在所有 customizer 都操作整个集合：</p>
+            <ul>
+                <li><strong>List</strong>: <code>UnaryOperator&lt;List&lt;T&gt;&gt;</code> - 操作整个列表</li>
+                <li><strong>Set</strong>: <code>UnaryOperator&lt;Set&lt;T&gt;&gt;</code> - 操作整个集合</li>
+                <li><strong>Map</strong>: <code>UnaryOperator&lt;Map&lt;K, T&gt;&gt;</code> - 操作整个 Map</li>
+                <li><strong>Array</strong>: <code>UnaryOperator&lt;T[]&gt;</code> - 操作整个数组</li>
+            </ul>
+            <p><strong>好处</strong>：</p>
+            <ul>
+                <li>一致的 API 设计，更容易理解和使用</li>
+                <li>更强大的灵活性：支持过滤、排序、限制、替换实现等操作</li>
+                <li>更直观：方法返回 <code>List&lt;T&gt;</code>，customizer 就操作 <code>List&lt;T&gt;</code></li>
+            </ul>
+            <pre><code>// 过滤列表
+List&lt;UserDto&gt; filtered = UserDtoCopier.toDtoList(users, list -&gt; 
+    list.stream()
+        .filter(dto -&gt; dto.getPrice() &gt;= 100)
+        .collect(Collectors.toList())
+);
+
+// 排序列表
+List&lt;UserDto&gt; sorted = UserDtoCopier.toDtoList(users, list -&gt; {
+    list.sort(Comparator.comparing(UserDto::getName));
+    return list;
+});
+
+// 如果需要修改每个元素，在 customizer 中遍历
+List&lt;UserDto&gt; modified = UserDtoCopier.toDtoList(users, list -&gt; {
+    list.forEach(dto -&gt; dto.setSource("batch"));
+    return list;
+});</code></pre>
+            
+            <h3>Q: 如何使用 Map/Array 批量转换的 UnaryOperator 重载？（v1.3.1 新增）</h3>
+            <p><strong>A</strong>: v1.3.1 为 Map 和 Array 批量转换方法提供了 UnaryOperator 重载：</p>
+            <pre><code>// Map 过滤
+Map&lt;String, UserDto&gt; filteredMap = UserDtoCopier.toDtoMap(userMap, result -&gt; {
+    result.entrySet().removeIf(entry -&gt; entry.getValue().getId() == null);
+    return result;
+});
+
+// Array 排序
+UserDto[] sortedArray = UserDtoCopier.toDtoArray(users, result -&gt; {
+    Arrays.sort(result, Comparator.comparing(UserDto::getName));
+    return result;
+});</code></pre>
+            
+            <h3>Q: 如何使用 Properties 配置文件？（v1.3.1 新增）</h3>
+            <p><strong>A</strong>: 在 src/main/resources/ 目录下创建 fast-bean-copier.properties 文件：</p>
+            <pre><code># fast-bean-copier.properties
+fast.bean.copier.componentModel=SPRING
+fast.bean.copier.nullValueStrategy=IGNORE</code></pre>
+            <p>配置优先级：类级别 &gt; 包级别 &gt; 配置文件 &gt; 默认值</p>
+            
+            <h3>Q: 什么是逆向转换智能跳过？（v1.3.1 新增）</h3>
+            <p><strong>A</strong>: 在 fromDto/updateEntity 方法中，使用了特殊映射配置的字段会自动跳过，因为这些映射是不可逆的：</p>
+            <ul>
+                <li>使用了 typeConverter 的字段（类型转换器通常是单向的）</li>
+                <li>使用了 expression 的字段（表达式是计算得出的）</li>
+                <li>使用了 qualifiedByName 的字段（具名方法是自定义转换）</li>
+                <li>使用了 constant 的字段（常量值不依赖源字段）</li>
+            </ul>
+            <p>生成的代码会包含中文注释说明跳过原因，例如：<code>// 类型转换器映射 'createTimeText' 不可逆，在 fromDto() 中跳过</code></p>
             
             <h3>Q: v1.2 有哪些新增/改进？</h3>
             <p><strong>A</strong>: 主要新增多字段映射（多对一、一对多）、6 种内置 TypeConverter 类型转换器（NumberFormatter、NumberParser、DateFormatter、DateParser、EnumStringConverter、JsonConverter）、表达式映射、依赖注入支持（Spring/CDI/JSR330）、函数式定制拷贝。</p>
@@ -195,12 +276,12 @@ public class UserDto { }</code></pre>
             <p><strong>A</strong>: 使用 <code>@CopyField</code> 注解的 <code>source</code> 和 <code>expression</code> 属性（v1.2.0+）：</p>
             <pre><code>// 多对一：firstName + lastName -> fullName
 @CopyField(source = {"firstName", "lastName"}, 
-           expression = "source.getFirstName() + \" \" + source.getLastName()")
+           expression = "java(source.getFirstName() + \" \" + source.getLastName())")
 private String fullName;
 
 // 一对多：fullName -> firstName
 @CopyField(source = "fullName", 
-           expression = "source.getFullName().split(\" \")[0]")
+           expression = "java(source.getFullName().split(\" \")[0])")
 private String firstName;</code></pre>
             
             <h3>Q: 如何使用函数式定制？</h3>

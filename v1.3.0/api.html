@@ -15,7 +15,7 @@
                 <h1>🚀 Fast Bean Copier</h1>
             </div>
             <p>高性能的 Java Bean 拷贝工具</p>
-            <div class="version-badge">版本 1.2.1</div>
+            <div class="version-badge">版本 1.3.0</div>
         </div>
     </header>
     
@@ -36,7 +36,7 @@
             <h1>Fast Bean Copier API 文档</h1>
             
             <div class="highlight-box">
-                <p><strong>v1.2 新增：</strong>多字段映射（多对一、一对多）、TypeConverter 类型转换器、依赖注入支持（Spring/CDI/JSR330）、函数式定制拷贝。</p>
+                <p><strong>v1.3 新增：</strong>更新现有对象（updateDto/updateEntity）、映射前回调（beforeMapping）、条件映射（condition）、默认值和常量（defaultValue/constant）、全局配置（@CopyTargetConfig）、Null 值处理策略（NullValueStrategy）。</p>
             </div>
             
             <h2>注解</h2>
@@ -67,6 +67,11 @@ public @interface CopyTarget {
      * 组件模型（依赖注入框架）。可选。（v1.2）
      */
     ComponentModel componentModel() default ComponentModel.DEFAULT;
+    
+    /**
+     * 映射前回调方法名。可选。（v1.3）
+     */
+    String beforeMapping() default "";
 }</code></pre>
             
             <h4>属性</h4>
@@ -103,6 +108,12 @@ public @interface CopyTarget {
                         <td><code>ComponentModel</code></td>
                         <td>否</td>
                         <td>依赖注入框架选择（v1.2）</td>
+                    </tr>
+                    <tr>
+                        <td><code>beforeMapping</code></td>
+                        <td><code>String</code></td>
+                        <td>否</td>
+                        <td>映射前回调方法名（v1.3）</td>
                     </tr>
                 </tbody>
             </table>
@@ -145,7 +156,78 @@ public @interface CopyField {
     String qualifiedByName() default "";  // 具名转换方法名
     Class&lt;? extends TypeConverter&lt;?, ?&gt;&gt; converter() default TypeConverter.None.class;
     String format() default "";        // 格式字符串
+    String condition() default "";     // 条件表达式（v1.3）
+    String defaultValue() default "";  // 默认值（v1.3）
+    String constant() default "";      // 常量值（v1.3）
 }</code></pre>
+            
+            <h4>属性</h4>
+            <table>
+                <thead>
+                    <tr>
+                        <th>属性</th>
+                        <th>类型</th>
+                        <th>必需</th>
+                        <th>说明</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><code>source</code></td>
+                        <td><code>String[]</code></td>
+                        <td>否</td>
+                        <td>源字段名数组（支持多对一）</td>
+                    </tr>
+                    <tr>
+                        <td><code>target</code></td>
+                        <td><code>String</code></td>
+                        <td>否</td>
+                        <td>目标字段名</td>
+                    </tr>
+                    <tr>
+                        <td><code>expression</code></td>
+                        <td><code>String</code></td>
+                        <td>否</td>
+                        <td>Java 表达式</td>
+                    </tr>
+                    <tr>
+                        <td><code>qualifiedByName</code></td>
+                        <td><code>String</code></td>
+                        <td>否</td>
+                        <td>具名转换方法名</td>
+                    </tr>
+                    <tr>
+                        <td><code>converter</code></td>
+                        <td><code>Class&lt;?&gt;</code></td>
+                        <td>否</td>
+                        <td>TypeConverter 实现类</td>
+                    </tr>
+                    <tr>
+                        <td><code>format</code></td>
+                        <td><code>String</code></td>
+                        <td>否</td>
+                        <td>格式字符串</td>
+                    </tr>
+                    <tr>
+                        <td><code>condition</code></td>
+                        <td><code>String</code></td>
+                        <td>否</td>
+                        <td>条件表达式（v1.3）</td>
+                    </tr>
+                    <tr>
+                        <td><code>defaultValue</code></td>
+                        <td><code>String</code></td>
+                        <td>否</td>
+                        <td>默认值（v1.3）</td>
+                    </tr>
+                    <tr>
+                        <td><code>constant</code></td>
+                        <td><code>String</code></td>
+                        <td>否</td>
+                        <td>常量值（v1.3）</td>
+                    </tr>
+                </tbody>
+            </table>
             
             <h4>示例</h4>
             <pre><code>// 多对一映射
@@ -159,7 +241,73 @@ private String priceText;
 
 // 使用具名方法
 @CopyField(qualifiedByName = "statusToName")
-private String statusText;</code></pre>
+private String statusText;
+
+// 条件映射（v1.3）
+@CopyField(condition = "java(source.getName() != null)")
+private String name;
+
+// 默认值（v1.3）
+@CopyField(defaultValue = "未知")
+private String name;
+
+// 常量值（v1.3）
+@CopyField(constant = "SYSTEM")
+private String createdBy;</code></pre>
+            
+            <h3>@CopyTargetConfig（v1.3 新增）</h3>
+            <p>包级别配置注解，为包内所有 @CopyTarget 提供默认配置。</p>
+            
+            <h4>声明</h4>
+            <pre><code>@Target(ElementType.PACKAGE)
+@Retention(RetentionPolicy.SOURCE)
+public @interface CopyTargetConfig {
+    /**
+     * 默认组件模型
+     */
+    ComponentModel componentModel() default ComponentModel.DEFAULT;
+    
+    /**
+     * 默认 null 值处理策略
+     */
+    NullValueStrategy nullValueStrategy() default NullValueStrategy.IGNORE;
+}</code></pre>
+            
+            <h4>属性</h4>
+            <table>
+                <thead>
+                    <tr>
+                        <th>属性</th>
+                        <th>类型</th>
+                        <th>默认值</th>
+                        <th>说明</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><code>componentModel</code></td>
+                        <td><code>ComponentModel</code></td>
+                        <td><code>DEFAULT</code></td>
+                        <td>默认组件模型</td>
+                    </tr>
+                    <tr>
+                        <td><code>nullValueStrategy</code></td>
+                        <td><code>NullValueStrategy</code></td>
+                        <td><code>IGNORE</code></td>
+                        <td>默认 null 值处理策略</td>
+                    </tr>
+                </tbody>
+            </table>
+            
+            <h4>示例</h4>
+            <pre><code>// package-info.java
+@CopyTargetConfig(
+    componentModel = ComponentModel.SPRING,
+    nullValueStrategy = NullValueStrategy.IGNORE
+)
+package com.example.dto;
+
+import com.github.jackieonway.copier.annotation.*;</code></pre>
             
             <h2>内置 TypeConverter（v1.2）</h2>
             
@@ -227,6 +375,38 @@ private String dataJson;  // Object -> JSON String</code></pre>
                 </tbody>
             </table>
             
+            <h2>NullValueStrategy 枚举（v1.3 新增）</h2>
+            <p>定义 null 值处理策略，用于 updateDto/updateEntity 方法。</p>
+            <table>
+                <thead>
+                    <tr>
+                        <th>值</th>
+                        <th>说明</th>
+                        <th>使用场景</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><code>IGNORE</code></td>
+                        <td>忽略 null 值，不更新目标字段（默认）</td>
+                        <td>部分更新，保留目标对象的原有值</td>
+                    </tr>
+                    <tr>
+                        <td><code>REPLACE</code></td>
+                        <td>替换 null 值，将目标字段设置为 null</td>
+                        <td>完全覆盖，源对象的 null 值也要同步</td>
+                    </tr>
+                </tbody>
+            </table>
+            
+            <h4>示例</h4>
+            <pre><code>// 在 @CopyTargetConfig 中使用
+@CopyTargetConfig(nullValueStrategy = NullValueStrategy.IGNORE)
+package com.example.dto;
+
+// IGNORE 策略：源字段为 null 时，目标字段保持不变
+// REPLACE 策略：源字段为 null 时，目标字段也设置为 null</code></pre>
+            
             <h2>生成的 Copier 类</h2>
             
             <h3>方法概览</h3>
@@ -242,6 +422,8 @@ private String dataJson;  // Object -> JSON String</code></pre>
                 <tbody>
                     <tr><td><code>toDto(source)</code></td><td>单个对象转换</td><td>✅ <code>toDto(source, customizer)</code></td></tr>
                     <tr><td><code>fromDto(source)</code></td><td>单个对象反向转换</td><td>✅ <code>fromDto(source, customizer)</code></td></tr>
+                    <tr><td><code>updateDto(target, source)</code></td><td>更新已存在的 DTO 对象（v1.3）</td><td>❌</td></tr>
+                    <tr><td><code>updateEntity(target, source)</code></td><td>更新已存在的实体对象（v1.3）</td><td>❌</td></tr>
                     <tr><td><code>toDtoList(sources)</code></td><td>List 转换</td><td>✅ <code>toDtoList(sources, customizer)</code></td></tr>
                     <tr><td><code>toDtoSet(sources)</code></td><td>Set 转换</td><td>✅ <code>toDtoSet(sources, customizer)</code></td></tr>
                     <tr><td><code>fromDtoList(sources)</code></td><td>List 反向转换</td><td>✅ <code>fromDtoList(sources, customizer)</code></td></tr>
@@ -252,7 +434,7 @@ private String dataJson;  // Object -> JSON String</code></pre>
                     <tr><td><code>fromDtoArray(sources)</code></td><td>数组反向转换</td><td>❌</td></tr>
                 </tbody>
             </table>
-            <p><strong>注意</strong>：Map 和数组方法暂不支持函数式重载。</p>
+            <p><strong>注意</strong>：Map、数组和 update 方法暂不支持函数式重载。</p>
             
             <h3>方法详情</h3>
             
@@ -297,6 +479,53 @@ UserDto userDto = UserDtoCopier.toDto(user);</code></pre>
             <p><strong>示例</strong>：</p>
             <pre><code>UserDto userDto = new UserDto(1L, "张三", "zhangsan@example.com", 25);
 User user = UserDtoCopier.fromDto(userDto);</code></pre>
+            
+            <h4>updateDto(target, source)（v1.3 新增）</h4>
+            <p>更新已存在的目标 DTO 对象，而不是创建新对象。</p>
+            <p><strong>签名</strong>：</p>
+            <pre><code>public static void updateDto(TargetType target, SourceType source)</code></pre>
+            <p><strong>参数</strong>：</p>
+            <ul>
+                <li><code>target</code> - 要更新的目标 DTO 对象</li>
+                <li><code>source</code> - 源对象</li>
+            </ul>
+            <p><strong>说明</strong>：</p>
+            <ul>
+                <li>源对象为 null 时直接返回，不修改目标对象</li>
+                <li>支持嵌套对象的递归更新</li>
+                <li>支持 List、Set、Map、数组字段的更新</li>
+                <li>null 值处理由 NullValueStrategy 控制</li>
+            </ul>
+            <p><strong>示例</strong>：</p>
+            <pre><code>UserDto existingDto = new UserDto();
+existingDto.setName("原始名称");
+
+User user = new User(1L, "新名称", "new@example.com", 25);
+UserDtoCopier.updateDto(existingDto, user);
+// existingDto.getName() -> "新名称"</code></pre>
+            
+            <h4>updateEntity(target, source)（v1.3 新增）</h4>
+            <p>更新已存在的实体对象（反向更新）。</p>
+            <p><strong>签名</strong>：</p>
+            <pre><code>public static void updateEntity(SourceType target, TargetType source)</code></pre>
+            <p><strong>参数</strong>：</p>
+            <ul>
+                <li><code>target</code> - 要更新的实体对象</li>
+                <li><code>source</code> - 源 DTO 对象</li>
+            </ul>
+            <p><strong>说明</strong>：</p>
+            <ul>
+                <li>源对象为 null 时直接返回，不修改目标对象</li>
+                <li>支持嵌套对象的递归更新</li>
+                <li>null 值处理由 NullValueStrategy 控制</li>
+            </ul>
+            <p><strong>示例</strong>：</p>
+            <pre><code>User existingUser = new User();
+existingUser.setName("原始名称");
+
+UserDto userDto = new UserDto(1L, "新名称", "new@example.com", 25);
+UserDtoCopier.updateEntity(existingUser, userDto);
+// existingUser.getName() -> "新名称"</code></pre>
             
             <h4>toDtoList(sources)</h4>
             <p>将源对象列表转换为目标 DTO 对象列表。</p>

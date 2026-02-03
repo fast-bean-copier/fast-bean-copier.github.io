@@ -4,18 +4,18 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>常见问题 - Fast Bean Copier</title>
-    <link rel="icon" type="image/png" href="favicon.png">
-    <link rel="stylesheet" href="styles.css">
+    <link rel="icon" type="image/png" href="../favicon.png">
+    <link rel="stylesheet" href="../styles.css">
 </head>
 <body>
     <header>
         <div class="container">
             <div class="logo-container">
-                <img src="logo.png" alt="Fast Bean Copier Logo" class="logo">
+                <img src="../logo.png" alt="Fast Bean Copier Logo" class="logo">
                 <h1>🚀 Fast Bean Copier</h1>
             </div>
             <p>高性能的 Java Bean 拷贝工具</p>
-            <div class="version-badge">最新版本 1.3.2</div>
+            <div class="version-badge">版本 1.3.1</div>
         </div>
     </header>
     
@@ -39,48 +39,6 @@
             <p>本项目采用 Apache License 2.0 许可证。</p>
             
             <h2>基本问题</h2>
-            
-            <h3>Q: v1.3.2 有哪些新增功能？</h3>
-            <p><strong>A</strong>: v1.3.2 主要新增嵌套对象深拷贝功能：</p>
-            <ul>
-                <li><strong>自动深拷贝不同类型的嵌套对象</strong>：当源对象和目标对象的嵌套字段类型不同时（如 Address → AddressDto），自动进行深拷贝转换</li>
-                <li><strong>智能 Copier 检测</strong>：
-                    <ul>
-                        <li>如果嵌套对象有 @CopyTarget 注解，使用 Copier 类（最优性能）</li>
-                        <li>如果没有注解，使用字段级递归拷贝（自动回退）</li>
-                    </ul>
-                </li>
-                <li><strong>多层级嵌套支持</strong>：支持任意深度的对象图（A→B→C→D...）</li>
-                <li><strong>混合模式</strong>：某些层级使用 Copier，某些层级使用字段拷贝</li>
-                <li><strong>类型兼容性增强</strong>：自定义对象类型现在被识别为兼容，触发深拷贝而非跳过字段</li>
-            </ul>
-            <p><strong>示例</strong>：</p>
-            <pre><code>// 实体类
-public class Employee {
-    private Long id;
-    private String name;
-    private Address address;  // 嵌套对象
-}
-
-// DTO 类 - 嵌套对象类型不同
-@CopyTarget(source = Employee.class)
-public class EmployeeDto {
-    private Long id;
-    private String name;
-    private AddressDto address;  // 不同类型的嵌套对象
-}
-
-// 如果 AddressDto 有 @CopyTarget 注解，自动使用 AddressDtoCopier
-@CopyTarget(source = Address.class)
-public class AddressDto {
-    private String city;
-    private String street;
-}
-
-// 使用
-Employee employee = new Employee(1L, "张三", new Address("北京", "朝阳区"));
-EmployeeDto dto = EmployeeDtoCopier.toDto(employee);
-// dto.address 自动转换为 AddressDto 类型</code></pre>
             
             <h3>Q: v1.3.1 有哪些新增功能？</h3>
             <p><strong>A</strong>: v1.3.1 主要新增和改进：</p>
@@ -275,22 +233,10 @@ fast.bean.copier.nullValueStrategy=IGNORE</code></pre>
             <h2>功能问题</h2>
             
             <h3>Q: 支持嵌套对象拷贝吗？</h3>
-            <p><strong>A</strong>: 完全支持。v1.3.2 新增嵌套对象深拷贝功能：</p>
-            <ul>
-                <li><strong>同类型嵌套对象</strong>：直接拷贝引用</li>
-                <li><strong>不同类型嵌套对象</strong>：自动深拷贝转换（如 Address → AddressDto）</li>
-                <li><strong>智能策略选择</strong>：
-                    <ul>
-                        <li>如果嵌套对象有 <code>@CopyTarget</code> 注解，使用 Copier 类（最优性能）</li>
-                        <li>如果没有注解，使用字段级递归拷贝（自动回退）</li>
-                    </ul>
-                </li>
-                <li><strong>多层级支持</strong>：支持任意深度的对象图（建议 &lt; 5 层）</li>
-            </ul>
-            <pre><code>// 示例：自动转换不同类型的嵌套对象
-@CopyTarget(source = Employee.class)
-public class EmployeeDto {
-    private AddressDto address;  // Address → AddressDto 自动转换
+            <p><strong>A</strong>: 支持。同名字段会直接拷贝；当嵌套类型也使用 <code>@CopyTarget</code> 标注时，会自动递归深拷贝，无需手动补齐：</p>
+            <pre><code>@CopyTarget(source = User.class)
+public class UserDto {
+    private AddressDto address; // 与源类 Address 对应
 }</code></pre>
             
             <h3>Q: 集合/数组字段会自动深拷贝吗？</h3>
@@ -583,7 +529,7 @@ public class UserDto {
         <p>采用 Apache License 2.0 许可证</p>
     </footer>
     
-    <script src="script.js"></script>
+    <script src="../script.js"></script>
 </body>
 </html>
 

@@ -4,14 +4,14 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>API 文档 - Fast Bean Copier</title>
-    <link rel="icon" type="image/png" href="favicon.png">
-    <link rel="stylesheet" href="styles.css">
+    <link rel="icon" type="image/png" href="../favicon.png">
+    <link rel="stylesheet" href="../styles.css">
 </head>
 <body>
     <header>
         <div class="container">
             <div class="logo-container">
-                <img src="logo.png" alt="Fast Bean Copier Logo" class="logo">
+                <img src="../logo.png" alt="Fast Bean Copier Logo" class="logo">
                 <h1>🚀 Fast Bean Copier</h1>
             </div>
             <p>高性能的 Java Bean 拷贝工具</p>
@@ -35,6 +35,10 @@
         <div class="content">
             <h1>Fast Bean Copier API 文档</h1>
             
+            <div class="highlight-box">
+                <p><strong>v1.1 提示：</strong>新增 List/Set/Map/数组字段的深拷贝与反向拷贝，支持嵌套集合、多维数组，raw/无界通配符集合自动降级为浅拷贝并输出编译期警告。</p>
+            </div>
+            
             <h2>注解</h2>
             
             <h3>@CopyTarget</h3>
@@ -57,24 +61,28 @@ public @interface CopyTarget {
             
             <h4>属性</h4>
             <table>
-                <tr>
-                    <th>属性</th>
-                    <th>类型</th>
-                    <th>必需</th>
-                    <th>说明</th>
-                </tr>
-                <tr>
-                    <td><code>source</code></td>
-                    <td><code>Class&lt;?&gt;</code></td>
-                    <td>是</td>
-                    <td>源类的类型</td>
-                </tr>
-                <tr>
-                    <td><code>ignore</code></td>
-                    <td><code>String[]</code></td>
-                    <td>否</td>
-                    <td>要忽略的字段名数组</td>
-                </tr>
+                <thead>
+                    <tr>
+                        <th>属性</th>
+                        <th>类型</th>
+                        <th>必需</th>
+                        <th>说明</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><code>source</code></td>
+                        <td><code>Class&lt;?&gt;</code></td>
+                        <td>是</td>
+                        <td>源类的类型</td>
+                    </tr>
+                    <tr>
+                        <td><code>ignore</code></td>
+                        <td><code>String[]</code></td>
+                        <td>否</td>
+                        <td>要忽略的字段名数组</td>
+                    </tr>
+                </tbody>
             </table>
             
             <h4>示例</h4>
@@ -90,134 +98,188 @@ public class UserResponse {
     // ...
 }</code></pre>
             
-            <h2>生成的 Copier 类方法</h2>
+            <h2>生成的 Copier 类</h2>
             
-            <h3>toDto(source)</h3>
+            <h3>方法</h3>
+            
+            <h4>toDto(source)</h4>
             <p>将源对象转换为目标 DTO 对象。</p>
-            <p><strong>签名：</strong></p>
+            <p><strong>签名</strong>：</p>
             <pre><code>public static TargetType toDto(SourceType source)</code></pre>
-            <p><strong>参数：</strong> <code>source</code> - 源对象</p>
-            <p><strong>返回值：</strong> 目标 DTO 对象，如果源对象为 null，返回 null</p>
-            <p><strong>示例：</strong></p>
+            <p><strong>参数</strong>：</p>
+            <ul>
+                <li><code>source</code> - 源对象</li>
+            </ul>
+            <p><strong>返回值</strong>：</p>
+            <ul>
+                <li>目标 DTO 对象，如果源对象为 null，返回 null</li>
+            </ul>
+            <p><strong>示例</strong>：</p>
             <pre><code>User user = new User(1L, "张三", "zhangsan@example.com", 25);
 UserDto userDto = UserDtoCopier.toDto(user);</code></pre>
             
-            <h3>fromDto(source)</h3>
+            <h4>fromDto(source)</h4>
             <p>将目标 DTO 对象转换回源对象（反向拷贝）。</p>
-            <p><strong>签名：</strong></p>
+            <p><strong>签名</strong>：</p>
             <pre><code>public static SourceType fromDto(TargetType source)</code></pre>
-            <p><strong>参数：</strong> <code>source</code> - 目标 DTO 对象</p>
-            <p><strong>返回值：</strong> 源对象，如果目标对象为 null，返回 null</p>
-            <p><strong>示例：</strong></p>
+            <p><strong>参数</strong>：</p>
+            <ul>
+                <li><code>source</code> - 目标 DTO 对象</li>
+            </ul>
+            <p><strong>返回值</strong>：</p>
+            <ul>
+                <li>源对象，如果目标对象为 null，返回 null</li>
+            </ul>
+            <p><strong>示例</strong>：</p>
             <pre><code>UserDto userDto = new UserDto(1L, "张三", "zhangsan@example.com", 25);
 User user = UserDtoCopier.fromDto(userDto);</code></pre>
             
-            <h3>toDtoList(sources)</h3>
+            <h4>toDtoList(sources)</h4>
             <p>将源对象列表转换为目标 DTO 对象列表。</p>
-            <p><strong>签名：</strong></p>
-            <pre><code>public static List toDtoList(List sources)</code></pre>
-            <p><strong>参数：</strong> <code>sources</code> - 源对象列表</p>
-            <p><strong>返回值：</strong> 目标 DTO 对象列表，如果源列表为 null，返回 null</p>
-            <p><strong>示例：</strong></p>
+            <p><strong>签名</strong>：</p>
+            <pre><code>public static java.util.List&lt;TargetType&gt; toDtoList(java.util.List&lt;SourceType&gt; sources)</code></pre>
+            <p><strong>参数</strong>：</p>
+            <ul>
+                <li><code>sources</code> - 源对象列表</li>
+            </ul>
+            <p><strong>返回值</strong>：</p>
+            <ul>
+                <li>目标 DTO 对象列表，如果源列表为 null，返回 null</li>
+            </ul>
+            <p><strong>示例</strong>：</p>
             <pre><code>List&lt;User&gt; users = userRepository.findAll();
 List&lt;UserDto&gt; userDtos = UserDtoCopier.toDtoList(users);</code></pre>
             
-            <h3>toDtoSet(sources)</h3>
+            <h4>toDtoSet(sources)</h4>
             <p>将源对象集合转换为目标 DTO 对象集合。</p>
-            <p><strong>签名：</strong></p>
-            <pre><code>public static Set toDtoSet(Set sources)</code></pre>
-            <p><strong>参数：</strong> <code>sources</code> - 源对象集合</p>
-            <p><strong>返回值：</strong> 目标 DTO 对象集合，如果源集合为 null，返回 null</p>
-            <p><strong>示例：</strong></p>
+            <p><strong>签名</strong>：</p>
+            <pre><code>public static java.util.Set&lt;TargetType&gt; toDtoSet(java.util.Set&lt;SourceType&gt; sources)</code></pre>
+            <p><strong>参数</strong>：</p>
+            <ul>
+                <li><code>sources</code> - 源对象集合</li>
+            </ul>
+            <p><strong>返回值</strong>：</p>
+            <ul>
+                <li>目标 DTO 对象集合，如果源集合为 null，返回 null</li>
+            </ul>
+            <p><strong>示例</strong>：</p>
             <pre><code>Set&lt;User&gt; users = new HashSet&lt;&gt;(userRepository.findAll());
 Set&lt;UserDto&gt; userDtos = UserDtoCopier.toDtoSet(users);</code></pre>
             
-            <h3>fromDtoList(sources)</h3>
+            <h4>fromDtoList(sources)</h4>
             <p>将目标 DTO 对象列表转换回源对象列表（反向拷贝）。</p>
-            <p><strong>签名：</strong></p>
-            <pre><code>public static List fromDtoList(List sources)</code></pre>
-            <p><strong>参数：</strong> <code>sources</code> - 目标 DTO 对象列表</p>
-            <p><strong>返回值：</strong> 源对象列表，如果目标列表为 null，返回 null</p>
+            <p><strong>签名</strong>：</p>
+            <pre><code>public static java.util.List&lt;SourceType&gt; fromDtoList(java.util.List&lt;TargetType&gt; sources)</code></pre>
+            <p><strong>参数</strong>：</p>
+            <ul>
+                <li><code>sources</code> - 目标 DTO 对象列表</li>
+            </ul>
+            <p><strong>返回值</strong>：</p>
+            <ul>
+                <li>源对象列表，如果目标列表为 null，返回 null</li>
+            </ul>
+            <p><strong>示例</strong>：</p>
+            <pre><code>List&lt;UserDto&gt; userDtos = request.getBody();
+List&lt;User&gt; users = UserDtoCopier.fromDtoList(userDtos);</code></pre>
             
-            <h3>fromDtoSet(sources)</h3>
+            <h4>fromDtoSet(sources)</h4>
             <p>将目标 DTO 对象集合转换回源对象集合（反向拷贝）。</p>
-            <p><strong>签名：</strong></p>
-            <pre><code>public static Set fromDtoSet(Set sources)</code></pre>
-            <p><strong>参数：</strong> <code>sources</code> - 目标 DTO 对象集合</p>
-            <p><strong>返回值：</strong> 源对象集合，如果目标集合为 null，返回 null</p>
+            <p><strong>签名</strong>：</p>
+            <pre><code>public static java.util.Set&lt;SourceType&gt; fromDtoSet(java.util.Set&lt;TargetType&gt; sources)</code></pre>
+            <p><strong>参数</strong>：</p>
+            <ul>
+                <li><code>sources</code> - 目标 DTO 对象集合</li>
+            </ul>
+            <p><strong>返回值</strong>：</p>
+            <ul>
+                <li>源对象集合，如果目标集合为 null，返回 null</li>
+            </ul>
+            
+            <h4>toDtoMap(sources)</h4>
+            <p>将源对象 Map 转换为目标 DTO Map（保留 Key，拷贝 Value）。</p>
+            <p><strong>签名</strong>：</p>
+            <pre><code>public static &lt;K&gt; java.util.Map&lt;K, TargetType&gt; toDtoMap(java.util.Map&lt;K, SourceType&gt; sources)</code></pre>
+            
+            <h4>fromDtoMap(sources)</h4>
+            <p>将目标 DTO Map 反向转换为源对象 Map。</p>
+            <p><strong>签名</strong>：</p>
+            <pre><code>public static &lt;K&gt; java.util.Map&lt;K, SourceType&gt; fromDtoMap(java.util.Map&lt;K, TargetType&gt; sources)</code></pre>
+            
+            <h4>toDtoArray(sources)</h4>
+            <p>将源对象数组转换为目标 DTO 数组。</p>
+            <p><strong>签名</strong>：</p>
+            <pre><code>public static TargetType[] toDtoArray(SourceType[] sources)</code></pre>
+            
+            <h4>fromDtoArray(sources)</h4>
+            <p>将目标 DTO 数组转换回源对象数组。</p>
+            <p><strong>签名</strong>：</p>
+            <pre><code>public static SourceType[] fromDtoArray(TargetType[] sources)</code></pre>
             
             <h2>类型转换</h2>
             
             <h3>支持的类型转换</h3>
+            <p>Fast Bean Copier 自动支持以下类型转换：</p>
+            
+            <h4>基本类型 ↔ 包装类型</h4>
             <table>
-                <tr>
-                    <th>源类型</th>
-                    <th>目标类型</th>
-                    <th>说明</th>
-                </tr>
-                <tr>
-                    <td><code>int</code></td>
-                    <td><code>Integer</code></td>
-                    <td>自动装箱</td>
-                </tr>
-                <tr>
-                    <td><code>Integer</code></td>
-                    <td><code>int</code></td>
-                    <td>自动拆箱，null 转换为 0</td>
-                </tr>
-                <tr>
-                    <td><code>long</code></td>
-                    <td><code>Long</code></td>
-                    <td>自动装箱</td>
-                </tr>
-                <tr>
-                    <td><code>Long</code></td>
-                    <td><code>long</code></td>
-                    <td>自动拆箱，null 转换为 0L</td>
-                </tr>
-                <tr>
-                    <td><code>double</code></td>
-                    <td><code>Double</code></td>
-                    <td>自动装箱</td>
-                </tr>
-                <tr>
-                    <td><code>Double</code></td>
-                    <td><code>double</code></td>
-                    <td>自动拆箱，null 转换为 0.0</td>
-                </tr>
-                <tr>
-                    <td><code>float</code></td>
-                    <td><code>Float</code></td>
-                    <td>自动装箱</td>
-                </tr>
-                <tr>
-                    <td><code>Float</code></td>
-                    <td><code>float</code></td>
-                    <td>自动拆箱，null 转换为 0.0f</td>
-                </tr>
-                <tr>
-                    <td><code>boolean</code></td>
-                    <td><code>Boolean</code></td>
-                    <td>自动装箱</td>
-                </tr>
-                <tr>
-                    <td><code>Boolean</code></td>
-                    <td><code>boolean</code></td>
-                    <td>自动拆箱，null 转换为 false</td>
-                </tr>
+                <thead>
+                    <tr>
+                        <th>源类型</th>
+                        <th>目标类型</th>
+                        <th>说明</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr><td><code>int</code></td><td><code>Integer</code></td><td>自动装箱</td></tr>
+                    <tr><td><code>Integer</code></td><td><code>int</code></td><td>自动拆箱，null 转换为 0</td></tr>
+                    <tr><td><code>long</code></td><td><code>Long</code></td><td>自动装箱</td></tr>
+                    <tr><td><code>Long</code></td><td><code>long</code></td><td>自动拆箱，null 转换为 0L</td></tr>
+                    <tr><td><code>double</code></td><td><code>Double</code></td><td>自动装箱</td></tr>
+                    <tr><td><code>Double</code></td><td><code>double</code></td><td>自动拆箱，null 转换为 0.0</td></tr>
+                    <tr><td><code>float</code></td><td><code>Float</code></td><td>自动装箱</td></tr>
+                    <tr><td><code>Float</code></td><td><code>float</code></td><td>自动拆箱，null 转换为 0.0f</td></tr>
+                    <tr><td><code>short</code></td><td><code>Short</code></td><td>自动装箱</td></tr>
+                    <tr><td><code>Short</code></td><td><code>short</code></td><td>自动拆箱，null 转换为 0</td></tr>
+                    <tr><td><code>byte</code></td><td><code>Byte</code></td><td>自动装箱</td></tr>
+                    <tr><td><code>Byte</code></td><td><code>byte</code></td><td>自动拆箱，null 转换为 0</td></tr>
+                    <tr><td><code>char</code></td><td><code>Character</code></td><td>自动装箱</td></tr>
+                    <tr><td><code>Character</code></td><td><code>char</code></td><td>自动拆箱，null 转换为 '\u0000'</td></tr>
+                    <tr><td><code>boolean</code></td><td><code>Boolean</code></td><td>自动装箱</td></tr>
+                    <tr><td><code>Boolean</code></td><td><code>boolean</code></td><td>自动拆箱，null 转换为 false</td></tr>
+                </tbody>
             </table>
+            
+            <h4>同名字段拷贝</h4>
+            <p>对于同名字段，Fast Bean Copier 会自动拷贝，无论类型是否相同（只要兼容）。</p>
+            <p><strong>示例</strong>：</p>
+            <pre><code>public class User {
+    private String name;  // String 类型
+}
+
+@CopyTarget(source = User.class)
+public class UserDto {
+    private String name;  // 自动从 User.name 拷贝
+}</code></pre>
             
             <h2>Null 值处理</h2>
             
             <h3>对象级别的 null 处理</h3>
+            <p>所有映射方法都支持 null 值处理：</p>
             <pre><code>UserDto dto = UserDtoCopier.toDto(null);  // 返回 null
 User user = UserDtoCopier.fromDto(null);  // 返回 null
 List&lt;UserDto&gt; dtos = UserDtoCopier.toDtoList(null);  // 返回 null</code></pre>
             
             <h3>字段级别的 null 处理</h3>
-            <p>在字段映射时，null 值会被保留。</p>
+            <p>在字段映射时，null 值会被保留：</p>
+            <pre><code>User user = new User();
+user.setId(1L);
+user.setName(null);  // name 为 null
+
+UserDto dto = UserDtoCopier.toDto(user);
+// dto.name 也为 null</code></pre>
             
             <h3>包装类型 null 转换为基本类型</h3>
+            <p>当从包装类型转换为基本类型时，null 值会转换为默认值：</p>
             <pre><code>@CopyTarget(source = UserDto.class)
 public class User {
     private int age;  // 基本类型
@@ -232,6 +294,7 @@ User user = UserDtoCopier.fromDto(userDto);
             <h2>字段忽略</h2>
             
             <h3>使用 ignore 属性</h3>
+            <p>使用 <code>@CopyTarget</code> 注解的 <code>ignore</code> 属性可以指定要忽略的字段：</p>
             <pre><code>@CopyTarget(source = User.class, ignore = {"password", "token"})
 public class UserDto {
     private Long id;
@@ -240,12 +303,59 @@ public class UserDto {
     // password 和 token 不会被拷贝
 }</code></pre>
             
+            <h3>多个字段忽略</h3>
+            <pre><code>@CopyTarget(
+    source = User.class,
+    ignore = {"password", "token", "secretKey", "internalId"}
+)
+public class UserDto {
+    // ...
+}</code></pre>
+            
+            <h2>集合映射</h2>
+            
+            <h3>List 映射</h3>
+            <pre><code>// 转换为 DTO 列表
+List&lt;UserDto&gt; dtos = UserDtoCopier.toDtoList(users);
+
+// 反向转换
+List&lt;User&gt; users = UserDtoCopier.fromDtoList(dtos);</code></pre>
+            
+            <h3>Set 映射</h3>
+            <pre><code>// 转换为 DTO 集合
+Set&lt;UserDto&gt; dtoSet = UserDtoCopier.toDtoSet(users);
+
+// 反向转换
+Set&lt;User&gt; userSet = UserDtoCopier.fromDtoSet(dtoSet);</code></pre>
+            
+            <h3>集合中的 null 处理</h3>
+            <pre><code>// 集合为 null 时返回 null
+List&lt;UserDto&gt; dtos = UserDtoCopier.toDtoList(null);  // 返回 null
+
+// 集合中的 null 元素被保留
+List&lt;UserDto&gt; dtos = UserDtoCopier.toDtoList(
+    Arrays.asList(user1, null, user2)
+);
+// 结果中包含 3 个元素，第二个为 null</code></pre>
+            
+            <h3>Map 与数组深拷贝（v1.1）</h3>
+            <pre><code>Map&lt;String, User&gt; map = Collections.singletonMap("u1", new User(1L, "Tom", "t@test.com", 20));
+Map&lt;String, UserDto&gt; dtoMap = UserDtoCopier.toDtoMap(map); // 由生成的 Copier 提供
+
+User[] arr = new User[]{new User(1L, "Jerry", "j@test.com", 18)};
+UserDto[] dtoArr = UserDtoCopier.toDtoArray(arr);</code></pre>
+            <ul>
+                <li>Map：Key 通常直接拷贝，Value 按深拷贝规则处理；null Map/Value 保留。</li>
+                <li>数组：按元素深拷贝，支持多维数组与 null 元素。</li>
+                <li>Raw/无界通配符集合会降级为浅拷贝并给出编译期警告。</li>
+            </ul>
+            
             <h2>线程安全性</h2>
             <p>生成的 Copier 类是无状态的，可以安全地在多线程环境中使用。</p>
             <pre><code>// 在多线程环境中安全使用
 ExecutorService executor = Executors.newFixedThreadPool(10);
 for (User user : users) {
-    executor.submit(() -> {
+    executor.submit(() -&gt; {
         UserDto dto = UserDtoCopier.toDto(user);
         // 处理 dto
     });
@@ -258,6 +368,14 @@ for (User user : users) {
                 <li><strong>无动态代理</strong> - 生成的代码是普通 Java 代码</li>
                 <li><strong>内联友好</strong> - JIT 编译器可以内联生成的代码</li>
             </ul>
+            
+            <h2>异常处理</h2>
+            <p>Fast Bean Copier 生成的代码不会抛出检查异常。如果在 getter/setter 中抛出异常，异常会直接传播给调用者。</p>
+            <pre><code>try {
+    UserDto dto = UserDtoCopier.toDto(user);
+} catch (RuntimeException e) {
+    // 处理异常
+}</code></pre>
         </div>
     </div>
     
@@ -265,5 +383,8 @@ for (User user : users) {
         <p>&copy; 2025 Fast Bean Copier. All rights reserved.</p>
         <p>采用 Apache License 2.0 许可证</p>
     </footer>
+    
+    <script src="../script.js"></script>
 </body>
 </html>
+

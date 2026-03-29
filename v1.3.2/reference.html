@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
@@ -15,7 +15,7 @@
                 <h1>🚀 Fast Bean Copier</h1>
             </div>
             <p>高性能的 Java Bean 拷贝工具</p>
-            <div class="version-badge">版本 1.3.1</div>
+            <div class="version-badge">版本 1.3.2</div>
         </div>
     </header>
     
@@ -33,7 +33,7 @@
     
     <div class="container">
         <div class="content">
-            <h1>Fast Bean Copier 1.3.1 参考文档</h1>
+            <h1>Fast Bean Copier 1.3.2 参考文档</h1>
             
             <h2>前言</h2>
             <p>本文档是 Fast Bean Copier 的参考文档，Fast Bean Copier 是一个基于注解处理器的 Java Bean 拷贝工具，用于生成类型安全、高性能且零依赖的 Bean 映射代码。</p>
@@ -72,13 +72,13 @@
             <pre><code>&lt;dependency&gt;
     &lt;groupId&gt;com.github.jackieonway&lt;/groupId&gt;
     &lt;artifactId&gt;fast-bean-copier-annotations&lt;/artifactId&gt;
-    &lt;version&gt;1.3.1&lt;/version&gt;
+    &lt;version&gt;1.3.2&lt;/version&gt;
 &lt;/dependency&gt;
 
 &lt;dependency&gt;
     &lt;groupId&gt;com.github.jackieonway&lt;/groupId&gt;
     &lt;artifactId&gt;fast-bean-copier-processor&lt;/artifactId&gt;
-    &lt;version&gt;1.3.1&lt;/version&gt;
+    &lt;version&gt;1.3.2&lt;/version&gt;
     &lt;scope&gt;provided&lt;/scope&gt;
 &lt;/dependency&gt;</code></pre>
             <p>注意：处理器依赖应该使用 <code>provided</code> 作用域，因为它只在编译时需要。</p>
@@ -86,8 +86,8 @@
             <h3>2.2. Gradle</h3>
             <p>要在 Gradle 项目中使用 Fast Bean Copier，请在您的 <code>build.gradle</code> 中添加以下依赖：</p>
             <pre><code>dependencies {
-    implementation 'com.github.jackieonway:fast-bean-copier-annotations:1.3.1'
-    annotationProcessor 'com.github.jackieonway:fast-bean-copier-processor:1.3.1'
+    implementation 'com.github.jackieonway:fast-bean-copier-annotations:1.3.2'
+    annotationProcessor 'com.github.jackieonway:fast-bean-copier-processor:1.3.2'
 }</code></pre>
             
             <h3>2.3. Java 版本要求</h3>
@@ -887,15 +887,119 @@ UserDtoCopier.updateDto(existingDto, user);
 // existingDto.name -> "新名称"（被更新）
 // existingDto.email -> null（被设置为 null）</code></pre>
             
-            <h2>18. Null 值处理</h2>
+            <h2>18. 嵌套对象深拷贝（v1.3.2）</h2>
             
-            <h3>18.1. 对象级别的 null 处理</h3>
+            <p>v1.3.2 新增嵌套对象深拷贝功能，自动处理不同类型的嵌套对象转换。</p>
+            
+            <h3>18.1. 基本用法</h3>
+            <p>当源对象和目标对象的嵌套字段类型不同时，框架会自动进行深拷贝转换：</p>
+            <pre><code>// 实体类
+public class Employee {
+    private Long id;
+    private String name;
+    private Address address;  // 嵌套对象
+}
+
+// DTO 类
+@CopyTarget(source = Employee.class)
+public class EmployeeDto {
+    private Long id;
+    private String name;
+    private AddressDto address;  // 不同类型的嵌套对象
+}
+
+// 使用
+Employee employee = new Employee(1L, "张三", new Address("北京", "朝阳区"));
+EmployeeDto dto = EmployeeDtoCopier.toDto(employee);
+// dto.address 自动转换为 AddressDto 类型</code></pre>
+            
+            <h3>18.2. 智能 Copier 检测</h3>
+            <p>框架会智能检测嵌套对象是否有对应的 Copier 类：</p>
+            
+            <h4>方式 1：使用 Copier（推荐，最优性能）</h4>
+            <pre><code>// 为嵌套对象添加 @CopyTarget 注解
+@CopyTarget(source = Address.class)
+public class AddressDto {
+    private String city;
+    private String street;
+}
+
+// 生成的代码会使用 AddressDtoCopier
+target.setAddress(AddressDtoCopier.toDto(source.getAddress()));</code></pre>
+            
+            <h4>方式 2：字段级拷贝（自动回退）</h4>
+            <pre><code>// 如果 AddressDto 没有 @CopyTarget 注解
+public class AddressDto {
+    private String city;
+    private String street;
+}
+
+// 生成的代码会使用字段级递归拷贝
+AddressDto nestedAddressDto = new AddressDto();
+nestedAddressDto.setCity(source.getAddress().getCity());
+nestedAddressDto.setStreet(source.getAddress().getStreet());
+target.setAddress(nestedAddressDto);</code></pre>
+            
+            <h3>18.3. 多层级嵌套</h3>
+            <p>支持任意深度的对象图，混合使用 Copier 和字段级拷贝：</p>
+            <pre><code>// 层级 1：有 @CopyTarget
+@CopyTarget(source = Company.class)
+public class CompanyDto {
+    private Long id;
+    private DepartmentDto department;  // 层级 2
+}
+
+// 层级 2：无 @CopyTarget（使用字段拷贝）
+public class DepartmentDto {
+    private String name;
+    private ManagerDto manager;  // 层级 3
+}
+
+// 层级 3：有 @CopyTarget（在字段拷贝中也能使用 Copier）
+@CopyTarget(source = Manager.class)
+public class ManagerDto {
+    private String name;
+    private AddressDto address;  // 层级 4
+}
+
+// 层级 4：有 @CopyTarget
+@CopyTarget(source = Address.class)
+public class AddressDto {
+    private String city;
+    private String street;
+}
+
+// 使用
+Company company = new Company(1L, 
+    new Department("技术部", 
+        new Manager("李四", 
+            new Address("上海", "浦东新区"))));
+CompanyDto dto = CompanyDtoCopier.toDto(company);
+// 所有层级的嵌套对象都会被正确转换</code></pre>
+            
+            <h3>18.4. Null 安全</h3>
+            <p>所有嵌套对象拷贝都包含 null 检查：</p>
+            <pre><code>Employee employee = new Employee(1L, "张三", null);  // address 为 null
+EmployeeDto dto = EmployeeDtoCopier.toDto(employee);
+// dto.address 为 null，不会抛出 NullPointerException</code></pre>
+            
+            <h3>18.5. 性能建议</h3>
+            <ul>
+                <li><strong>频繁使用的嵌套对象</strong>：添加 <code>@CopyTarget</code> 注解，使用 Copier 获得最优性能</li>
+                <li><strong>简单或一次性嵌套对象</strong>：无需注解，使用字段级拷贝即可</li>
+                <li><strong>避免过深嵌套</strong>：建议对象图深度 &lt; 5 层</li>
+                <li><strong>不支持循环引用</strong>：框架不处理循环对象图</li>
+            </ul>
+            
+            <h2>19. Null 值处理</h2>
+            
+            <h3>19.1. 对象级别的 null 处理</h3>
             <p>所有映射方法都支持 null 值处理：</p>
             <pre><code>// 传入 null 返回 null
 UserDto dto = UserDtoCopier.toDto(null);  // 返回 null
 User user = UserDtoCopier.fromDto(null);  // 返回 null</code></pre>
             
-            <h3>18.2. 字段级别的 null 处理</h3>
+            <h3>19.2. 字段级别的 null 处理</h3>
             <p>在字段映射时，null 值会被保留：</p>
             <pre><code>User user = new User();
 user.setId(1L);
@@ -904,9 +1008,9 @@ user.setName(null);  // name 为 null
 UserDto dto = UserDtoCopier.toDto(user);
 // dto.name 也为 null</code></pre>
             
-            <h2>19. 生成的代码示例</h2>
+            <h2>20. 生成的代码示例</h2>
             
-            <h3>19.1. 基本 Copier 类</h3>
+            <h3>20.1. 基本 Copier 类</h3>
             <p>编译后自动生成的 <code>UserDtoCopier</code> 类示例：</p>
             <pre><code>public final class UserDtoCopier {
     private UserDtoCopier() {
@@ -936,9 +1040,9 @@ UserDto dto = UserDtoCopier.toDto(user);
     // ... 其他方法
 }</code></pre>
             
-            <h2>20. 常见用例</h2>
+            <h2>21. 常见用例</h2>
             
-            <h3>20.1. API 响应 DTO</h3>
+            <h3>21.1. API 响应 DTO</h3>
             <pre><code>// 数据库实体
 public class User {
     private Long id;
@@ -985,9 +1089,9 @@ userRepository.save(user);
 UserDto response = UserDtoCopier.toDto(user);
 return ResponseEntity.ok(response);</code></pre>
             
-            <h2>21. 故障排除</h2>
+            <h2>22. 故障排除</h2>
             
-            <h3>21.1. 生成的代码未出现</h3>
+            <h3>22.1. 生成的代码未出现</h3>
             <p><strong>问题</strong>：编译后在 <code>target/generated-sources/annotations/</code> 中找不到生成的 Copier 类。</p>
             <p><strong>解决方案</strong>：</p>
             <ol>
@@ -1013,9 +1117,9 @@ return ResponseEntity.ok(response);</code></pre>
                 <li>对于不兼容的类型，在应用层手动处理</li>
             </ol>
             
-            <h2>22. 性能考虑</h2>
+            <h2>23. 性能考虑</h2>
             
-            <h3>22.1. 编译期代码生成</h3>
+            <h3>23.1. 编译期代码生成</h3>
             <p>Fast Bean Copier 在编译期生成代码，因此：</p>
             <ul>
                 <li>运行时性能与手写代码相同</li>
@@ -1027,9 +1131,9 @@ return ResponseEntity.ok(response);</code></pre>
             <h3>22.2. 内存使用</h3>
             <p>生成的 Copier 类是无状态的，可以安全地在多线程环境中使用。</p>
             
-            <h2>23. 最佳实践</h2>
+            <h2>24. 最佳实践</h2>
             
-            <h3>23.1. 为每个 DTO 定义一个 @CopyTarget</h3>
+            <h3>24.1. 为每个 DTO 定义一个 @CopyTarget</h3>
             <pre><code>// ✅ 推荐
 @CopyTarget(source = User.class)
 public class UserDto { }
@@ -1066,7 +1170,7 @@ public class UserDto {
 // ❌ 不推荐
 // 不要在 DTO 中添加源类中不存在的字段（除非有特殊原因）</code></pre>
             
-            <h2>24. 常见问题</h2>
+            <h2>25. 常见问题</h2>
             
             <h3>Q: 支持哪些 Java 版本？</h3>
             <p><strong>A</strong>: Java 8 及以上版本。</p>
@@ -1106,10 +1210,10 @@ public class UserDto {
             <h3>Q: 支持 Builder 模式吗？</h3>
             <p><strong>A</strong>: 当前版本不支持。Copier 类使用 setter 方法进行赋值。</p>
             
-            <h2>25. 许可证</h2>
+            <h2>26. 许可证</h2>
             <p>Fast Bean Copier 采用 Apache License 2.0 许可证。</p>
             
-            <h2>26. 获取帮助</h2>
+            <h2>27. 获取帮助</h2>
             <p>如有问题，请：</p>
             <ol>
                 <li>查看本参考文档</li>
@@ -1117,9 +1221,29 @@ public class UserDto {
                 <li>在 <a href="https://github.com/fast-bean-copier/fast-bean-copier/issues" target="_blank">GitHub Issues</a> 中提出新问题</li>
             </ol>
             
-            <h2>27. 版本历史</h2>
+            <h2>28. 版本历史</h2>
             
-            <h3>1.3.0（2026-01-14）</h3>
+            <h3>1.4.0（2026-03-29）</h3>
+            <ul>
+                <li>新增：函数式处理增强 - preProcessor + postProcessor 双处理器 API</li>
+                <li>新增：深拷贝控制 - @CopyField.deepCopy 属性，字段级控制深拷贝行为</li>
+                <li>新增：所有转换方法（toDto/fromDto/updateDto/updateEntity 及集合方法）都支持双处理器</li>
+                <li>废弃：beforeMapping 属性标记为 @Deprecated，建议使用 preProcessor 替代</li>
+                <li>废弃：customizer 方法标记为 @Deprecated，建议使用 postProcessor 替代</li>
+                <li>改进：API 统一性 - 所有方法提供一致的双处理器体验</li>
+                <li>改进：性能优化 - 通过 deepCopy = false 可显著提升性能</li>
+                <li>测试：461 个测试用例全部通过</li>
+            </ul>
+            
+            <h3>1.3.2（2026-02-03）</h3>
+            <ul>
+                <li>新增：嵌套对象深拷贝 - 自动处理不同类型的嵌套对象转换</li>
+                <li>新增：智能 Copier 检测 - 自动选择最优拷贝策略</li>
+                <li>新增：多层级嵌套支持 - 支持任意深度的对象图</li>
+                <li>改进：类型兼容性增强 - 自定义对象类型现在被识别为兼容</li>
+            </ul>
+            
+            <h3>1.3.1（2026-01-28）</h3>
             <ul>
                 <li>更新现有对象：updateDto/updateEntity 方法</li>
                 <li>映射前回调：beforeMapping 属性</li>

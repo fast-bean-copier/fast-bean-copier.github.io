@@ -4,18 +4,18 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>常见问题 - Fast Bean Copier</title>
-    <link rel="icon" type="image/png" href="favicon.png">
-    <link rel="stylesheet" href="styles.css">
+    <link rel="icon" type="image/png" href="../favicon.png">
+    <link rel="stylesheet" href="../styles.css">
 </head>
 <body>
     <header>
         <div class="container">
             <div class="logo-container">
-                <img src="logo.png" alt="Fast Bean Copier Logo" class="logo">
+                <img src="../logo.png" alt="Fast Bean Copier Logo" class="logo">
                 <h1>🚀 Fast Bean Copier</h1>
             </div>
             <p>高性能的 Java Bean 拷贝工具</p>
-            <div class="version-badge">最新版本 1.5.0</div>
+            <div class="version-badge">版本 1.4.0</div>
         </div>
     </header>
     
@@ -39,83 +39,7 @@
             <p>本项目采用 Apache License 2.0 许可证。</p>
             
             <h2>版本特性</h2>
-
-            <h3>Q: v1.5.0 有哪些新增功能？</h3>
-            <p><strong>A</strong>: v1.5.0 主要新增 Bean ↔ Map 转换支持，并清理了 v1.4.0 废弃的 API：</p>
-            <ul>
-                <li><strong>Bean ↔ Map 转换</strong>：
-                    <ul>
-                        <li><code>@CopyToMap</code>：标记类支持 Bean → Map 转换，生成 <code>{Class}MapCopier</code></li>
-                        <li><code>@CopyFromMap</code>：标记类支持 Map → Bean 转换</li>
-                        <li><code>MapKeyStrategy</code>：FIELD_NAME / CAMEL_CASE / SNAKE_CASE / CUSTOM 四种 key 命名策略</li>
-                        <li><code>@CopyField(mapKey)</code>：字段级自定义 Map key，优先级最高</li>
-                        <li>支持 toMapList / toMapSet / fromMapList / fromMapSet 批量方法（含函数式重载）</li>
-                    </ul>
-                </li>
-                <li><strong>API 清理（移除废弃 API）</strong>：
-                    <ul>
-                        <li>移除 <code>@CopyTarget.beforeMapping()</code> 属性 → 使用 <code>preProcessor</code> 替代</li>
-                        <li>移除单参数 <code>customizer</code> 重载 → 使用 <code>toDto(source, null, postProcessor)</code> 替代</li>
-                    </ul>
-                </li>
-            </ul>
-
-            <h3>Q: v1.5.0 如何使用 Bean → Map 转换？</h3>
-            <p><strong>A</strong>: 在类上添加 <code>@CopyToMap</code> 注解，编译后自动生成 MapCopier：</p>
-            <pre><code>@CopyToMap(keyStrategy = MapKeyStrategy.SNAKE_CASE)
-public class UserDto {
-    private Long id;           // key: "id"
-    private String firstName;  // key: "first_name"
-    @CopyField(mapKey = "email_addr")
-    private String email;      // key: "email_addr"（字段级优先）
-}
-
-Map&lt;String, Object&gt; map = UserDtoMapCopier.toMap(userDto);
-List&lt;Map&lt;String, Object&gt;&gt; mapList = UserDtoMapCopier.toMapList(userDtos);</code></pre>
-
-            <h3>Q: v1.5.0 如何使用 Map → Bean 转换？</h3>
-            <p><strong>A</strong>: 在类上添加 <code>@CopyFromMap</code> 注解：</p>
-            <pre><code>@CopyFromMap
-public class UserDto {
-    private Long id;
-    private String name;
-}
-
-Map&lt;String, Object&gt; map = Map.of("id", 1L, "name", "张三");
-UserDto dto = UserDtoMapCopier.fromMap(map);
-List&lt;UserDto&gt; dtos = UserDtoMapCopier.fromMapList(mapList);</code></pre>
-
-            <h3>Q: @CopyToMap 和 @CopyTarget 可以同时使用吗？</h3>
-            <p><strong>A</strong>: 可以。两者独立生成不同的 Copier 类，互不影响：</p>
-            <pre><code>@CopyTarget(source = User.class)  // 生成 UserDtoCopier（Bean ↔ Bean）
-@CopyToMap                         // 生成 UserDtoMapCopier（Bean → Map）
-@CopyFromMap                       // 生成 UserDtoMapCopier（Map → Bean）
-public class UserDto { ... }</code></pre>
-
-            <h3>Q: v1.5.0 移除了哪些 API？如何迁移？</h3>
-            <p><strong>A</strong>: v1.5.0 移除了 v1.4.0 标记为废弃的两类 API：</p>
-            <p><strong>1. beforeMapping 属性</strong>：</p>
-            <pre><code>// 旧方法（v1.5.0 已移除）
-// @CopyTarget(source = User.class, beforeMapping = "validate")
-// public class UserDto {
-//     default void validate(User source) { ... }
-// }
-
-// 新方法（推荐）
-UserDto dto = UserDtoCopier.toDto(user,
-    source -> { /* 验证逻辑 */ return source; },
-    null
-);</code></pre>
-            <p><strong>2. 单参数 customizer 重载</strong>：</p>
-            <pre><code>// 旧方法（v1.5.0 已移除）
-// UserDto dto = UserDtoCopier.toDto(user, result -> { ... });
-
-// 新方法（推荐）
-UserDto dto = UserDtoCopier.toDto(user, null, result -> {
-    result.setDisplayName(result.getName().toUpperCase());
-    return result;
-});</code></pre>
-
+            
             <h3>Q: v1.4.0 有哪些新增功能？</h3>
             <p><strong>A</strong>: v1.4.0 主要新增函数式处理增强和深拷贝控制：</p>
             <ul>
@@ -199,9 +123,12 @@ public class EmployeeDto {
             </ul>
             
             <h3>Q: 旧的 customizer 方法还能用吗？</h3>
-            <p><strong>A</strong>: 不能，<strong>v1.5.0 已完全移除</strong>单参数 customizer 重载。请迁移到双处理器 API：</p>
-            <pre><code>// 旧方法（v1.5.0 已移除）
-// UserDto dto = UserDtoCopier.toDto(user, result -> { ... });
+            <p><strong>A</strong>: 可以，但已标记为 <code>@Deprecated</code>。建议迁移到新的双处理器 API：</p>
+            <pre><code>// 旧方法（已废弃）
+UserDto dto = UserDtoCopier.toDto(user, result -> {
+    result.setDisplayName(result.getName().toUpperCase());
+    return result;
+});
 
 // 新方法（推荐）
 UserDto dto = UserDtoCopier.toDto(user, null, result -> {
@@ -210,15 +137,19 @@ UserDto dto = UserDtoCopier.toDto(user, null, result -> {
 });</code></pre>
             
             <h3>Q: beforeMapping 还能用吗？</h3>
-            <p><strong>A</strong>: 不能，<strong>v1.5.0 已完全移除</strong> <code>beforeMapping</code> 属性。请使用 <code>preProcessor</code> 替代：</p>
-            <pre><code>// 旧方法（v1.5.0 已移除）
-// @CopyTarget(source = User.class, beforeMapping = "validate")
-// public class UserDto {
-//     default void validate(User source) { ... }
-// }
+            <p><strong>A</strong>: 可以，但已标记为 <code>@Deprecated</code>。建议使用 <code>preProcessor</code> 替代：</p>
+            <pre><code>// 旧方法（已废弃）
+@CopyTarget(source = User.class, beforeMapping = "validate")
+public class UserDto {
+    default void validate(User source) {
+        if (source.getName() == null) {
+            throw new IllegalArgumentException("Name cannot be null");
+        }
+    }
+}
 
 // 新方法（推荐）
-UserDto dto = UserDtoCopier.toDto(user,
+UserDto dto = UserDtoCopier.toDto(user, 
     source -> {
         if (source.getName() == null) {
             throw new IllegalArgumentException("Name cannot be null");
@@ -458,8 +389,8 @@ fast.bean.copier.nullValueStrategy=IGNORE</code></pre>
             <h3>Q: 可以在 Gradle 项目中使用吗？</h3>
             <p><strong>A</strong>: 可以。在 <code>build.gradle</code> 中添加：</p>
             <pre><code>dependencies {
-    implementation 'com.github.jackieonway:fast-bean-copier-annotations:1.5.0'
-    annotationProcessor 'com.github.jackieonway:fast-bean-copier-processor:1.5.0'
+    implementation 'com.github.jackieonway:fast-bean-copier-annotations:1.4.0'
+    annotationProcessor 'com.github.jackieonway:fast-bean-copier-processor:1.4.0'
 }</code></pre>
             
             <h2>功能问题</h2>
@@ -542,11 +473,7 @@ List&lt;UserDto&gt; dtos = UserDtoCopier.toDtoList(users, result -> {
 });</code></pre>
             
             <h3>Q: 支持 Map 转换吗？</h3>
-            <p><strong>A</strong>: 分两种场景：</p>
-            <ul>
-                <li><strong>Bean ↔ Map 转换（v1.5.0）</strong>：使用 <code>@CopyToMap</code> / <code>@CopyFromMap</code>，生成 <code>MapCopier</code> 的 <code>toMap</code> / <code>fromMap</code> 方法，详见上文「v1.5.0 如何使用 Bean → Map 转换」</li>
-                <li><strong>Bean 中的 Map 字段</strong>：<code>Map&lt;K,V&gt;</code> 类型字段在 Bean ↔ Bean 拷贝时，Key 通常直接拷贝，Value 按深拷贝规则处理</li>
-            </ul>
+            <p><strong>A</strong>: 支持（v1.1.0+）。Key 通常直接拷贝（如 String/基本类型），Value 会按深拷贝规则处理；Map 为 null 时保持 null，Value 为 null 时保留；嵌套集合/数组的 Map 也会递归处理。</p>
             
             <h3>Q: 支持 Stream 转换吗？</h3>
             <p><strong>A</strong>: 当前版本不支持 Stream 的自动转换。可以使用 <code>toDtoList()</code> 或 <code>toDtoSet()</code> 后再转换为 Stream。</p>
@@ -777,7 +704,7 @@ public class UserDto {
         <p>采用 Apache License 2.0 许可证</p>
     </footer>
     
-    <script src="script.js"></script>
+    <script src="../script.js"></script>
 </body>
 </html>
 

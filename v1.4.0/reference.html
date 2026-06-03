@@ -4,18 +4,18 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>参考文档 - Fast Bean Copier</title>
-    <link rel="icon" type="image/png" href="favicon.png">
-    <link rel="stylesheet" href="styles.css">
+    <link rel="icon" type="image/png" href="../favicon.png">
+    <link rel="stylesheet" href="../styles.css">
 </head>
 <body>
     <header>
         <div class="container">
             <div class="logo-container">
-                <img src="logo.png" alt="Fast Bean Copier Logo" class="logo">
+                <img src="../logo.png" alt="Fast Bean Copier Logo" class="logo">
                 <h1>🚀 Fast Bean Copier</h1>
             </div>
             <p>高性能的 Java Bean 拷贝工具</p>
-            <div class="version-badge">最新版本 1.5.0</div>
+            <div class="version-badge">版本 1.4.0</div>
         </div>
     </header>
     
@@ -33,7 +33,7 @@
     
     <div class="container">
         <div class="content">
-            <h1>Fast Bean Copier 1.5.0 参考文档</h1>
+            <h1>Fast Bean Copier 1.4.0 参考文档</h1>
             
             <h2>前言</h2>
             <p>本文档是 Fast Bean Copier 的参考文档，Fast Bean Copier 是一个基于注解处理器的 Java Bean 拷贝工具，用于生成类型安全、高性能且零依赖的 Bean 映射代码。</p>
@@ -57,12 +57,6 @@
                 </li>
                 <li><strong>零运行时依赖</strong> - 生成的代码不依赖任何外部库</li>
                 <li><strong>支持集合映射</strong> - 自动生成 List/Set 的映射方法</li>
-                <li><strong>Bean ↔ Map 转换</strong> - @CopyToMap/@CopyFromMap 注解，生成 MapCopier 类（v1.5.0）</li>
-                <li><strong>函数式处理</strong> - preProcessor + postProcessor 双处理器 API（v1.4.0+，v1.5.0 为唯一方式）</li>
-                <li><strong>深拷贝控制</strong> - @CopyField.deepCopy 字段级控制（v1.4.0）</li>
-                <li><strong>更新现有对象</strong> - updateDto/updateEntity 方法（v1.3）</li>
-                <li><strong>条件映射和默认值</strong> - condition/defaultValue/constant（v1.3）</li>
-                <li><strong>全局配置</strong> - 包级别配置 + Properties 文件（v1.3/v1.3.1）</li>
             </ul>
             
             <h2>2. 设置</h2>
@@ -78,13 +72,13 @@
             <pre><code>&lt;dependency&gt;
     &lt;groupId&gt;com.github.jackieonway&lt;/groupId&gt;
     &lt;artifactId&gt;fast-bean-copier-annotations&lt;/artifactId&gt;
-    &lt;version&gt;1.5.0&lt;/version&gt;
+    &lt;version&gt;1.4.0&lt;/version&gt;
 &lt;/dependency&gt;
 
 &lt;dependency&gt;
     &lt;groupId&gt;com.github.jackieonway&lt;/groupId&gt;
     &lt;artifactId&gt;fast-bean-copier-processor&lt;/artifactId&gt;
-    &lt;version&gt;1.5.0&lt;/version&gt;
+    &lt;version&gt;1.4.0&lt;/version&gt;
     &lt;scope&gt;provided&lt;/scope&gt;
 &lt;/dependency&gt;</code></pre>
             <p>注意：处理器依赖应该使用 <code>provided</code> 作用域，因为它只在编译时需要。</p>
@@ -92,8 +86,8 @@
             <h3>2.2. Gradle</h3>
             <p>要在 Gradle 项目中使用 Fast Bean Copier，请在您的 <code>build.gradle</code> 中添加以下依赖：</p>
             <pre><code>dependencies {
-    implementation 'com.github.jackieonway:fast-bean-copier-annotations:1.5.0'
-    annotationProcessor 'com.github.jackieonway:fast-bean-copier-processor:1.5.0'
+    implementation 'com.github.jackieonway:fast-bean-copier-annotations:1.4.0'
+    annotationProcessor 'com.github.jackieonway:fast-bean-copier-processor:1.4.0'
 }</code></pre>
             
             <h3>2.3. Java 版本要求</h3>
@@ -380,7 +374,7 @@ public class UserService {
             
             <div class="highlight-box">
                 <p><strong>v1.4.0 新增：</strong>所有转换方法（toDto/fromDto/updateDto/updateEntity 及集合方法）都支持 preProcessor 和 postProcessor 双处理器。</p>
-                <p><strong>v1.5.0 移除：</strong>beforeMapping 和单参数 customizer 方法已在 v1.5.0 中完全移除。</p>
+                <p><strong>废弃提示：</strong>beforeMapping 和 customizer 已标记为 @Deprecated，建议使用新的双处理器 API。</p>
             </div>
             
             <h3>10.1. 双处理器 API</h3>
@@ -558,218 +552,77 @@ private TagDto[] tags;</code></pre>
             <h3>11.6. 默认行为</h3>
             <p>默认值为 <code>true</code>，保持与之前版本一致的深拷贝行为。如果需要浅拷贝，显式设置 <code>deepCopy = false</code>。</p>
             
-            <h2>12. Bean ↔ Map 转换（v1.5）</h2>
-            <p>v1.5.0 新增 Bean ↔ Map 转换支持，通过 <code>@CopyToMap</code> 和 <code>@CopyFromMap</code> 注解自动生成 <code>{Class}MapCopier</code> 类。</p>
-
-            <div class="highlight-box">
-                <p><strong>v1.5.0 新增：</strong>Bean ↔ Map 转换体系独立于 Bean ↔ Bean 体系，生成独立的 MapCopier 类，互不影响。</p>
-            </div>
-
-            <h3>12.1. @CopyToMap 注解（Bean → Map）</h3>
-            <pre><code>@CopyToMap
-public class UserDto {
-    private Long id;
-    private String name;
-    @CopyField(mapKey = "user_email")
-    private String email;
-}
-
-// 生成 UserDtoMapCopier，包含：
-// toMap(UserDto source)
-// toMap(UserDto source, preProcessor, postProcessor)
-// toMapList(List&lt;UserDto&gt; sources)
-// toMapSet(Set&lt;UserDto&gt; sources)
-
-Map&lt;String, Object&gt; map = UserDtoMapCopier.toMap(userDto);
-// {"id": 1, "name": "张三", "user_email": "zhangsan@example.com"}</code></pre>
-
-            <h3>12.2. @CopyFromMap 注解（Map → Bean）</h3>
-            <pre><code>@CopyFromMap
-public class UserDto {
-    private Long id;
-    private String name;
-}
-
-// 生成 UserDtoMapCopier，包含：
-// fromMap(Map&lt;String, Object&gt; source)
-// fromMap(source, preProcessor, postProcessor)
-// fromMapList(List&lt;Map&lt;String, Object&gt;&gt; sources)
-// fromMapSet(Set&lt;Map&lt;String, Object&gt;&gt; sources)
-
-Map&lt;String, Object&gt; map = Map.of("id", 1L, "name", "张三");
-UserDto userDto = UserDtoMapCopier.fromMap(map);</code></pre>
-
-            <h3>12.3. MapKeyStrategy 命名策略</h3>
-            <table>
-                <thead>
-                    <tr>
-                        <th>策略</th>
-                        <th>示例（字段 firstName）</th>
-                        <th>说明</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr><td><code>FIELD_NAME</code>（默认）</td><td><code>"firstName"</code></td><td>使用字段名</td></tr>
-                    <tr><td><code>CAMEL_CASE</code></td><td><code>"firstName"</code></td><td>驼峰命名（与字段名相同）</td></tr>
-                    <tr><td><code>SNAKE_CASE</code></td><td><code>"first_name"</code></td><td>下划线命名</td></tr>
-                    <tr><td><code>CUSTOM</code></td><td>由 <code>@CopyField(mapKey)</code> 指定</td><td>自定义 key</td></tr>
-                </tbody>
-            </table>
-            <pre><code>@CopyToMap(keyStrategy = MapKeyStrategy.SNAKE_CASE)
-public class UserDto {
-    private String firstName;  // key: "first_name"
-    private String lastName;   // key: "last_name"
-    @CopyField(mapKey = "uid") // 字段级优先级最高
-    private Long id;           // key: "uid"
-}</code></pre>
-
-            <h3>12.4. 函数式处理器</h3>
-            <pre><code>// Bean → Map 带处理器
-Map&lt;String, Object&gt; map = UserDtoMapCopier.toMap(
-    userDto,
-    source -> { source.setName(source.getName().trim()); return source; },
-    result -> { result.put("_version", "1.5"); return result; }
-);
-
-// Map → Bean 带处理器
-UserDto dto = UserDtoMapCopier.fromMap(
-    map,
-    source -> { source.remove("_version"); return source; },
-    result -> { result.setName(result.getName().toUpperCase()); return result; }
-);</code></pre>
-
-            <h3>12.5. 与 @CopyTarget 共存</h3>
-            <pre><code>// 同一类同时标注，生成两个独立的 Copier 类
-@CopyTarget(source = User.class)  // 生成 UserDtoCopier
-@CopyToMap                         // 生成 UserDtoMapCopier（toMap）
-@CopyFromMap                       // 生成 UserDtoMapCopier（fromMap）
-public class UserDto {
-    private Long id;
-    private String name;
-    @CopyField(source = "username")  // 仅对 BeanCopier 生效
-    private String name;
-    @CopyField(mapKey = "user_name") // 仅对 MapCopier 生效
-    private String displayName;
-}</code></pre>
-
-            <h3>12.6. ignore 属性</h3>
-            <pre><code>// 忽略指定字段不参与 Map 转换
-@CopyToMap(ignore = {"password", "token"})
-public class UserDto {
-    private Long id;
-    private String name;
-    private String password;  // 不会出现在 Map 中
-}</code></pre>
-
-            <h3>12.7. 双向转换</h3>
-            <p>同一类可同时标注 <code>@CopyToMap</code> + <code>@CopyFromMap</code>，生成双向方法：</p>
-            <pre><code>@CopyToMap
-@CopyFromMap
-public class UserDto {
-    private Long id;
-    private String name;
-}
-
-Map&lt;String, Object&gt; map = UserDtoMapCopier.toMap(userDto);
-UserDto dto = UserDtoMapCopier.fromMap(map);</code></pre>
-
-            <h3>12.8. 类型转换支持</h3>
-            <p>Bean ↔ Map 转换支持 TypeConverter 和 @CopyField 配置（与 Bean ↔ Bean 相同）：</p>
-            <pre><code>@CopyToMap
-public class ProductDto {
-    @CopyField(converter = NumberFormatter.class, format = "#,##0.00")
-    private String priceText;
-
-    @CopyField(source = {"firstName", "lastName"},
-               expression = "java(source.getFirstName() + \" \" + source.getLastName())")
-    private String fullName;
-}</code></pre>
-
-            <h3>12.9. 使用场景</h3>
-            <table>
-                <thead>
-                    <tr><th>场景</th><th>推荐配置</th><th>说明</th></tr>
-                </thead>
-                <tbody>
-                    <tr><td>REST API 响应</td><td><code>@CopyToMap</code></td><td>将 DTO 转换为 Map 作为 JSON 响应</td></tr>
-                    <tr><td>配置文件读取</td><td><code>@CopyFromMap</code></td><td>将 Map 配置转换为 Bean</td></tr>
-                    <tr><td>数据库结果集</td><td><code>@CopyFromMap</code></td><td>将查询结果转换为 Bean</td></tr>
-                    <tr><td>缓存存储</td><td><code>@CopyToMap</code> + <code>@CopyFromMap</code></td><td>双向转换，适合缓存场景</td></tr>
-                    <tr><td>外部系统集成</td><td><code>@CopyToMap</code></td><td>转换为通用 Map 格式进行传输</td></tr>
-                </tbody>
-            </table>
-
-            <h2>13. 函数式定制拷贝（v1.2 / v1.3.1，v1.5 已移除单参数重载）</h2>
+            <h2>12. 函数式定制拷贝（v1.2 / v1.3.1，v1.4 已废弃）</h2>
             <p>支持在拷贝完成后立即执行自定义逻辑。函数类型为 <code>java.util.function.UnaryOperator&lt;T&gt;</code>，保证入参与出参一致。</p>
-
+            
             <div class="highlight-box">
-                <p><strong>⚠️ v1.5.0 移除：</strong>单参数 customizer 重载已在 v1.5.0 中完全移除。请使用 preProcessor/postProcessor 双处理器 API（见第11章）。</p>
+                <p><strong>⚠️ v1.4.0 废弃提示：</strong>customizer 方法已标记为 @Deprecated，建议使用 preProcessor/postProcessor 双处理器 API（见第10章）。</p>
                 <p><strong>v1.3.1 重要变更：</strong>统一了所有集合类型的 UnaryOperator 行为。List/Set customizer 现在操作整个集合（而非单个元素），与 Map/Array 保持一致。</p>
             </div>
-
-            <h3>13.1. 支持的方法（v1.5 已移除）</h3>
-            <p><strong>⚠️ 以下单参数重载方法已在 v1.5.0 中完全移除，请使用第11章的双处理器 API。</strong></p>
+            
+            <h3>12.1. 支持的方法（已废弃）</h3>
+            <p><strong>⚠️ 以下方法已在 v1.4.0 标记为 @Deprecated，建议使用第10章的双处理器 API。</strong></p>
             <table>
                 <thead>
                     <tr>
                         <th>方法</th>
-                        <th>已移除的单参数重载（v1.5）</th>
+                        <th>函数式重载（已废弃）</th>
                         <th>Customizer 类型</th>
-                        <th>替代方案</th>
+                        <th>推荐替代方案</th>
                     </tr>
                 </thead>
                 <tbody>
                     <tr>
                         <td><code>toDto</code></td>
-                        <td>❌ <code>toDto(source, customizer)</code></td>
+                        <td>⚠️ <code>toDto(source, customizer)</code></td>
                         <td><code>UnaryOperator&lt;TargetDto&gt;</code></td>
                         <td><code>toDto(source, null, postProcessor)</code></td>
                     </tr>
                     <tr>
                         <td><code>fromDto</code></td>
-                        <td>❌ <code>fromDto(source, customizer)</code></td>
+                        <td>⚠️ <code>fromDto(source, customizer)</code></td>
                         <td><code>UnaryOperator&lt;Source&gt;</code></td>
                         <td><code>fromDto(source, null, postProcessor)</code></td>
                     </tr>
                     <tr>
                         <td><code>toDtoList</code></td>
-                        <td>❌ <code>toDtoList(sources, customizer)</code></td>
+                        <td>⚠️ <code>toDtoList(sources, customizer)</code></td>
                         <td><code>UnaryOperator&lt;List&lt;TargetDto&gt;&gt;</code></td>
                         <td><code>toDtoList(sources, null, postProcessor)</code></td>
                     </tr>
                     <tr>
                         <td><code>toDtoSet</code></td>
-                        <td>❌ <code>toDtoSet(sources, customizer)</code></td>
+                        <td>⚠️ <code>toDtoSet(sources, customizer)</code></td>
                         <td><code>UnaryOperator&lt;Set&lt;TargetDto&gt;&gt;</code></td>
                         <td><code>toDtoSet(sources, null, postProcessor)</code></td>
                     </tr>
                     <tr>
                         <td><code>fromDtoList</code></td>
-                        <td>❌ <code>fromDtoList(sources, customizer)</code></td>
+                        <td>⚠️ <code>fromDtoList(sources, customizer)</code></td>
                         <td><code>UnaryOperator&lt;List&lt;Source&gt;&gt;</code></td>
                         <td><code>fromDtoList(sources, null, postProcessor)</code></td>
                     </tr>
                     <tr>
                         <td><code>fromDtoSet</code></td>
-                        <td>❌ <code>fromDtoSet(sources, customizer)</code></td>
+                        <td>⚠️ <code>fromDtoSet(sources, customizer)</code></td>
                         <td><code>UnaryOperator&lt;Set&lt;Source&gt;&gt;</code></td>
                         <td><code>fromDtoSet(sources, null, postProcessor)</code></td>
                     </tr>
                     <tr>
                         <td><code>toDtoMap</code></td>
-                        <td>❌ <code>toDtoMap(sources, customizer)</code></td>
+                        <td>⚠️ <code>toDtoMap(sources, customizer)</code></td>
                         <td><code>UnaryOperator&lt;Map&lt;K, TargetDto&gt;&gt;</code></td>
                         <td><code>toDtoMap(sources, null, postProcessor)</code></td>
                     </tr>
                     <tr>
                         <td><code>fromDtoMap</code></td>
-                        <td>❌ <code>fromDtoMap(sources, customizer)</code></td>
+                        <td>⚠️ <code>fromDtoMap(sources, customizer)</code></td>
                         <td><code>UnaryOperator&lt;Map&lt;K, Source&gt;&gt;</code></td>
                         <td><code>fromDtoMap(sources, null, postProcessor)</code></td>
                     </tr>
                     <tr>
                         <td><code>toDtoArray</code></td>
-                        <td>❌ <code>toDtoArray(sources, customizer)</code></td>
+                        <td>⚠️ <code>toDtoArray(sources, customizer)</code></td>
                         <td><code>UnaryOperator&lt;TargetDto[]&gt;</code></td>
                         <td><code>toDtoArray(sources, null, postProcessor)</code></td>
                     </tr>
@@ -782,7 +635,7 @@ public class ProductDto {
                 </tbody>
             </table>
             
-            <h3>13.2. 单对象定制示例</h3>
+            <h3>12.2. 单对象定制示例</h3>
             <pre><code>// 单个对象
 UserDto dto = UserDtoCopier.toDto(user, result -> {
     result.setDisplayName(result.getName().toUpperCase());
@@ -795,7 +648,7 @@ User entity = UserDtoCopier.fromDto(userDto, result -> {
     return result;
 });</code></pre>
             
-            <h3>13.3. List 集合定制示例（v1.3.1 统一行为）</h3>
+            <h3>12.3. List 集合定制示例（v1.3.1 统一行为）</h3>
             <p>v1.3.1 统一后，List customizer 操作整个列表，支持过滤、排序、限制等操作：</p>
             <pre><code>// 过滤列表 - 只保留价格 >= 100 的元素
 List&lt;UserDto&gt; filteredList = UserDtoCopier.toDtoList(users, list -> 
@@ -826,7 +679,7 @@ List&lt;UserDto&gt; modifiedList = UserDtoCopier.toDtoList(users, list -> {
     return list;
 });</code></pre>
             
-            <h3>13.4. Set 集合定制示例（v1.3.1 统一行为）</h3>
+            <h3>12.4. Set 集合定制示例（v1.3.1 统一行为）</h3>
             <p>Set customizer 同样操作整个集合：</p>
             <pre><code>// 过滤 Set
 Set&lt;UserDto&gt; filteredSet = UserDtoCopier.toDtoSet(userSet, set -> 
@@ -840,7 +693,7 @@ Set&lt;UserDto&gt; immutableSet = UserDtoCopier.toDtoSet(userSet,
     Collections::unmodifiableSet
 );</code></pre>
             
-            <h3>13.5. Map 集合定制示例（v1.3.1 新增）</h3>
+            <h3>12.5. Map 集合定制示例（v1.3.1 新增）</h3>
             <p>Map customizer 操作整个 Map：</p>
             <pre><code>// 过滤 Map - 移除 null 值条目
 Map&lt;String, UserDto&gt; filteredMap = UserDtoCopier.toDtoMap(userMap, map -> {
@@ -859,7 +712,7 @@ Map&lt;String, UserDto&gt; enrichedMap = UserDtoCopier.toDtoMap(userMap, map -> 
     return map;
 });</code></pre>
             
-            <h3>13.6. Array 数组定制示例（v1.3.1 新增）</h3>
+            <h3>12.6. Array 数组定制示例（v1.3.1 新增）</h3>
             <p>Array customizer 操作整个数组：</p>
             <pre><code>// 过滤数组 - 移除 null 元素
 UserDto[] filteredArray = UserDtoCopier.toDtoArray(users, array -> 
@@ -879,7 +732,7 @@ UserDto[] limitedArray = UserDtoCopier.toDtoArray(users, array ->
     Arrays.copyOf(array, Math.min(10, array.length))
 );</code></pre>
             
-            <h3>13.7. null 安全</h3>
+            <h3>12.7. null 安全</h3>
             <p>当源对象为 null 时，customizer 函数不会被调用：</p>
             <pre><code>UserDto dto = UserDtoCopier.toDto(null, result -> {
     // 这里不会执行
@@ -893,9 +746,9 @@ List&lt;UserDto&gt; list = UserDtoCopier.toDtoList(null, result -> {
 });
 // list 为 null</code></pre>
             
-            <h2>14. 自定义转换器（v1.2）</h2>
+            <h2>13. 自定义转换器（v1.2）</h2>
             
-            <h3>14.1. 使用 uses 引入转换器</h3>
+            <h3>13.1. 使用 uses 引入转换器</h3>
             <p>通过 <code>@CopyTarget</code> 的 <code>uses</code> 属性引入自定义转换器类：</p>
             <pre><code>// 步骤1：定义转换器类
 @Component
@@ -918,7 +771,7 @@ public class UserDto {
     private List&lt;String&gt; tagList;
 }</code></pre>
             
-            <h3>14.2. 使用 qualifiedByName 绑定方法</h3>
+            <h3>13.2. 使用 qualifiedByName 绑定方法</h3>
             <p>通过 <code>qualifiedByName</code> 指定要调用的转换方法名：</p>
             <pre><code>@CopyTarget(source = Person.class, uses = {PersonConverter.class})
 public class PersonDto {
@@ -985,32 +838,44 @@ existingDto.setName("原始名称");
 UserDtoCopier.updateDto(existingDto, null);
 // existingDto 保持不变，name 仍为 "原始名称"</code></pre>
             
-            <h2>16. 映射前回调（v1.3，v1.5 已移除）</h2>
-            <p>v1.3 新增 <code>beforeMapping</code> 属性，v1.4.0 标记为废弃，<strong>v1.5.0 已完全移除</strong>。请使用 <code>preProcessor</code> 替代（见第11章）。</p>
-
+            <h2>15. 映射前回调（v1.3，v1.4 已废弃）</h2>
+            <p>v1.3 新增 <code>beforeMapping</code> 属性，用于在映射逻辑执行之前调用指定的回调方法。</p>
+            
             <div class="highlight-box">
-                <p><strong>⚠️ v1.5.0 移除提示：</strong>beforeMapping 已在 v1.5.0 中完全移除。请使用 preProcessor 替代：</p>
+                <p><strong>⚠️ v1.4.0 废弃提示：</strong>beforeMapping 已标记为 @Deprecated，建议使用 preProcessor 替代（见第10章）。</p>
             </div>
-
-            <h3>迁移示例</h3>
-            <pre><code>// 旧方法（v1.5.0 已移除）
-// @CopyTarget(source = User.class, beforeMapping = "validateAndPrepare")
-// public class UserDto {
-//     default void validateAndPrepare(User source) { ... }
-// }
-
-// 新方法（推荐）
-UserDto dto = UserDtoCopier.toDto(user,
-    source -> {
+            
+            <h3>15.1. 基本用法</h3>
+            <pre><code>@CopyTarget(source = User.class, beforeMapping = "validateAndPrepare")
+public class UserDto {
+    private Long id;
+    private String name;
+    
+    // 映射前回调方法（必须是 default 方法）
+    default void validateAndPrepare(User source) {
         if (source.getName() == null) {
             throw new IllegalArgumentException("Name cannot be null");
         }
-        return source;
-    },
-    null
-);</code></pre>
+        // 可以进行验证、初始化、日志记录等操作
+    }
+}</code></pre>
             
-            <h2>17. 条件映射（v1.3）</h2>
+            <h3>15.2. 方法签名要求</h3>
+            <ul>
+                <li>必须是目标类中的 <code>default</code> 方法</li>
+                <li>参数类型为源类类型</li>
+                <li>返回类型为 <code>void</code></li>
+            </ul>
+            
+            <h3>15.3. 使用场景</h3>
+            <ul>
+                <li><strong>验证</strong>：在映射前验证源对象的有效性</li>
+                <li><strong>初始化</strong>：准备映射所需的资源或状态</li>
+                <li><strong>日志记录</strong>：记录映射操作的开始</li>
+                <li><strong>审计</strong>：记录数据转换的审计信息</li>
+            </ul>
+            
+            <h2>16. 条件映射（v1.3）</h2>
             <p>v1.3 新增 <code>condition</code> 属性，用于指定条件表达式，决定是否执行字段映射。</p>
             
             <h3>16.1. 基本用法</h3>
@@ -1048,7 +913,7 @@ private String phone;</code></pre>
 )
 private String priceText;</code></pre>
             
-            <h2>18. 默认值和常量（v1.3）</h2>
+            <h2>17. 默认值和常量（v1.3）</h2>
             <p>v1.3 新增 <code>defaultValue</code> 和 <code>constant</code> 属性，用于设置默认值和常量值。</p>
             
             <h3>17.1. 默认值（defaultValue）</h3>
@@ -1125,7 +990,7 @@ public class UserDto {
                 </tbody>
             </table>
             
-            <h2>19. 全局配置（v1.3/v1.3.1）</h2>
+            <h2>18. 全局配置（v1.3/v1.3.1）</h2>
             <p>v1.3 新增 <code>@CopyTargetConfig</code> 注解用于包级别配置，v1.3.1 新增 Properties 配置文件支持。</p>
             
             <h3>18.1. @CopyTargetConfig 包级别配置（v1.3）</h3>
@@ -1200,7 +1065,7 @@ public class OrderDto { }  // 使用 CDI（包级别）
 @CopyTarget(source = Product.class)
 public class ProductDto { }  // 使用 SPRING（配置文件）</code></pre>
             
-            <h2>20. Null 值处理策略（v1.3）</h2>
+            <h2>19. Null 值处理策略（v1.3）</h2>
             <p>v1.3 新增 <code>NullValueStrategy</code> 枚举，用于控制 null 值的处理方式。</p>
             
             <h3>19.1. 策略说明</h3>
@@ -1262,7 +1127,7 @@ UserDtoCopier.updateDto(existingDto, user);
 // existingDto.name -> "新名称"（被更新）
 // existingDto.email -> null（被设置为 null）</code></pre>
             
-            <h2>21. 嵌套对象深拷贝（v1.3.2）</h2>
+            <h2>20. 嵌套对象深拷贝（v1.3.2）</h2>
             
             <p>v1.3.2 新增嵌套对象深拷贝功能，自动处理不同类型的嵌套对象转换。</p>
             
@@ -1366,7 +1231,7 @@ EmployeeDto dto = EmployeeDtoCopier.toDto(employee);
                 <li><strong>不支持循环引用</strong>：框架不处理循环对象图</li>
             </ul>
             
-            <h2>22. Null 值处理</h2>
+            <h2>21. Null 值处理</h2>
             
             <h3>21.1. 对象级别的 null 处理</h3>
             <p>所有映射方法都支持 null 值处理：</p>
@@ -1383,7 +1248,7 @@ user.setName(null);  // name 为 null
 UserDto dto = UserDtoCopier.toDto(user);
 // dto.name 也为 null</code></pre>
             
-            <h2>23. 生成的代码示例</h2>
+            <h2>22. 生成的代码示例</h2>
             
             <h3>22.1. 基本 Copier 类</h3>
             <p>编译后自动生成的 <code>UserDtoCopier</code> 类示例：</p>
@@ -1415,7 +1280,7 @@ UserDto dto = UserDtoCopier.toDto(user);
     // ... 其他方法
 }</code></pre>
             
-            <h2>24. 常见用例</h2>
+            <h2>23. 常见用例</h2>
             
             <h3>23.1. API 响应 DTO</h3>
             <pre><code>// 数据库实体
@@ -1598,17 +1463,6 @@ public class UserDto {
             
             <h2>30. 版本历史</h2>
             
-            <h3>1.5.0（2026-06-03）</h3>
-            <ul>
-                <li>新增：Bean ↔ Map 转换 - @CopyToMap/@CopyFromMap 注解，生成 {Class}MapCopier 类</li>
-                <li>新增：MapKeyStrategy 枚举 - FIELD_NAME/CAMEL_CASE/SNAKE_CASE/CUSTOM 四种 key 命名策略</li>
-                <li>新增：@CopyField.mapKey 属性 - 字段级自定义 Map key，优先级高于 keyStrategy</li>
-                <li>新增：toMapList/toMapSet/fromMapList/fromMapSet 批量方法（含函数式重载）</li>
-                <li>移除：@CopyTarget.beforeMapping() 属性（v1.4.0 已废弃）</li>
-                <li>移除：单参数 customizer 重载方法（v1.4.0 已废弃）</li>
-                <li>测试：新增 55+ v1.5.0 专项测试，代码覆盖率 95%+</li>
-            </ul>
-
             <h3>1.4.0（2026-03-29）</h3>
             <ul>
                 <li>新增：函数式处理增强 - preProcessor + postProcessor 双处理器 API</li>
@@ -1683,6 +1537,6 @@ public class UserDto {
         <p>采用 Apache License 2.0 许可证</p>
     </footer>
     
-    <script src="script.js"></script>
+    <script src="../script.js"></script>
 </body>
 </html>

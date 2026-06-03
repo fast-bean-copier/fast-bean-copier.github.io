@@ -1,6 +1,6 @@
-# Fast Bean Copier 1.1.0 版本参考文档
+# Fast Bean Copier 1.5.0 文档网站
 
-这是 Fast Bean Copier 1.1.0 版本的参考文档，包含该版本的完整文档内容。
+这是 Fast Bean Copier 1.5.0 版本的文档网站，包含该版本的完整文档内容（Bean ↔ Map 转换、API 清理等）。
 
 ## 文档页面
 

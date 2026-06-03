@@ -15,7 +15,7 @@
                 <h1>🚀 Fast Bean Copier</h1>
             </div>
             <p>高性能的 Java Bean 拷贝工具</p>
-            <div class="version-badge">最新版本 1.4.0</div>
+            <div class="version-badge">最新版本 1.5.0</div>
         </div>
     </header>
     
@@ -38,11 +38,15 @@
             <p>Fast Bean Copier 是一个基于注解处理器的 Java Bean 拷贝工具，用于生成类型安全、高性能且零依赖的 Bean 映射代码。</p>
             
             <div class="highlight-box">
-                <p><strong>v1.4.0 更新：</strong>函数式处理增强 - preProcessor + postProcessor 双处理器 API；深拷贝控制 - @CopyField.deepCopy 属性，字段级控制深拷贝行为，优化性能。</p>
+                <p><strong>v1.5.0 更新：</strong>Bean ↔ Map 转换支持 - @CopyToMap/@CopyFromMap 注解，生成 MapCopier 类；API 清理 - 移除 beforeMapping 和单参数 customizer 废弃 API。</p>
             </div>
             
             <h2>✨ 核心特性</h2>
             <div class="feature-grid">
+                <div class="feature-card">
+                    <h3>🗺️ Bean ↔ Map 转换</h3>
+                    <p>@CopyToMap/@CopyFromMap 注解，生成 MapCopier 类，支持 MapKeyStrategy 和字段级 mapKey（v1.5.0 新增）</p>
+                </div>
                 <div class="feature-card">
                     <h3>🔄 函数式处理增强</h3>
                     <p>preProcessor + postProcessor 双处理器 API，统一的函数式处理（v1.4.0 新增）</p>
@@ -97,7 +101,7 @@
                 </div>
                 <div class="feature-card">
                     <h3>⚙️ 映射前回调</h3>
-                    <p>beforeMapping 属性，在映射前执行验证、初始化等操作（v1.3 新增，v1.4.0 已废弃）</p>
+                    <p>beforeMapping 属性，在映射前执行验证、初始化等操作（v1.3 新增，v1.5.0 已移除，请使用 preProcessor）</p>
                 </div>
                 <div class="feature-card">
                     <h3>🎯 条件映射</h3>
@@ -124,13 +128,13 @@
             <pre><code>&lt;dependency&gt;
     &lt;groupId&gt;com.github.jackieonway&lt;/groupId&gt;
     &lt;artifactId&gt;fast-bean-copier-annotations&lt;/artifactId&gt;
-    &lt;version&gt;1.4.0&lt;/version&gt;
+    &lt;version&gt;1.5.0&lt;/version&gt;
 &lt;/dependency&gt;
 
 &lt;dependency&gt;
     &lt;groupId&gt;com.github.jackieonway&lt;/groupId&gt;
     &lt;artifactId&gt;fast-bean-copier-processor&lt;/artifactId&gt;
-    &lt;version&gt;1.4.0&lt;/version&gt;
+    &lt;version&gt;1.5.0&lt;/version&gt;
     &lt;scope&gt;provided&lt;/scope&gt;
 &lt;/dependency&gt;</code></pre>
             
@@ -146,8 +150,13 @@ public class UserDto {
 }</code></pre>
             
             <h3>3. 使用</h3>
-            <pre><code>User user = new User(1L, "张三", "zhangsan@example.com");
-UserDto userDto = UserDtoCopier.toDto(user);</code></pre>
+            <pre><code>// Bean ↔ Bean
+User user = new User(1L, "张三", "zhangsan@example.com");
+UserDto userDto = UserDtoCopier.toDto(user);
+
+// Bean ↔ Map（v1.5.0，需 @CopyToMap / @CopyFromMap）
+Map&lt;String, Object&gt; map = UserDtoMapCopier.toMap(userDto);
+UserDto restored = UserDtoMapCopier.fromMap(map);</code></pre>
             
             <h2>📖 文档导航</h2>
             <div class="toc">
@@ -159,6 +168,7 @@ UserDto userDto = UserDtoCopier.toDto(user);</code></pre>
                     <li><a href="faq.html">常见问题解答</a> - 常见问题和解决方案</li>
                     <li><a href="summary.html">项目总结</a> - 项目概览和统计</li>
                     <li><a href="changelog.html">更新日志</a> - 版本变更记录</li>
+                    <li><a href="changelog.html#v1.5.0">v1.5.0 发布说明</a> - Bean ↔ Map 转换与 API 清理</li>
                 </ul>
             </div>
             
@@ -175,10 +185,16 @@ UserDto userDto = UserDtoCopier.toDto(user);</code></pre>
                     </thead>
                     <tbody>
                         <tr>
-                            <td><strong>1.4.0</strong></td>
+                            <td><strong>1.5.0</strong></td>
+                            <td>2026-06-03</td>
+                            <td>Bean ↔ Map 转换、API 清理（移除废弃 API）</td>
+                            <td><span class="current-version">当前版本</span></td>
+                        </tr>
+                        <tr>
+                            <td><a href="v1.4.0/index.html">1.4.0</a></td>
                             <td>2026-03-29</td>
                             <td>函数式处理增强、深拷贝控制</td>
-                            <td><span class="current-version">当前版本</span></td>
+                            <td><a href="v1.4.0/index.html">查看文档</a></td>
                         </tr>
                         <tr>
                             <td><a href="v1.3.2/index.html">1.3.2</a></td>
